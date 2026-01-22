@@ -5,7 +5,6 @@ using cwlogs.settings;
 using FluentAssertions;
 using Moq;
 using Spectre.Console.Cli;
-using Xunit;
 
 namespace cwlogs.Tests.Command;
 

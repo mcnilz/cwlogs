@@ -1,6 +1,5 @@
 using cwlogs.util;
 using FluentAssertions;
-using Xunit;
 
 namespace cwlogs.Tests.Util;
 

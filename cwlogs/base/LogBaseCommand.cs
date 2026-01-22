@@ -38,13 +38,13 @@ public abstract class LogBaseCommand<TSettings> : AsyncCommand<TSettings> where 
         {
             var messageContent = JsonUtils.ParseMessage(ev.Message);
 
-            var json = JsonSerializer.Serialize(new
+            var json = JsonSerializer.Serialize(new LogEventOutput
             {
                 Timestamp = DateTimeOffset.FromUnixTimeMilliseconds(ev.Timestamp ?? 0).ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
                 Stream = ev.LogStreamName,
                 Message = messageContent,
                 EventId = ev.EventId
-            });
+            }, SourceGenerationContext.Default.LogEventOutput);
             Console.WriteLine(json);
             return;
         }

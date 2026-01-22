@@ -3,7 +3,6 @@ using Amazon.CloudWatchLogs.Model;
 using cwlogs.Base;
 using FluentAssertions;
 using Moq;
-using Xunit;
 
 namespace cwlogs.Tests.Base;
 

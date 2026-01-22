@@ -12,7 +12,7 @@ public static class JsonUtils
         {
             try
             {
-                return JsonSerializer.Deserialize<JsonElement>(message);
+                return JsonSerializer.Deserialize(message, SourceGenerationContext.Default.JsonElement);
             }
             catch
             {

@@ -1,5 +1,3 @@
-using System;
-
 namespace cwlogs.util;
 
 public static class LambdaUtils
