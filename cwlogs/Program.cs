@@ -1,35 +1,60 @@
-﻿using cwlogs;
+﻿using System.Diagnostics.CodeAnalysis;
 using cwlogs.Base;
 using cwlogs.command;
+using cwlogs.settings;
 using Spectre.Console.Cli;
 
-var app = new CommandApp();
+namespace cwlogs;
 
-app.Configure(config =>
+internal static class Program
 {
-    config.SetApplicationName("cwlogs");
-    config.SetInterceptor(new ColorInterceptor());
-    config.AddCommand<GroupsCommand>(CommandNames.Groups)
-        .WithDescription("Lists log groups.");
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(GroupsCommand))]
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(StreamsCommand))]
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(FetchCommand))]
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(TailCommand))]
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(CompletionCommand))]
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(CompleteCommand))]
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(CompletionSettings))]
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(FetchSettings))]
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(GlobalSettings))]
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(CompleteCommand.Settings))]
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(ColorInterceptor))]
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, "Spectre.Console.Cli.ExplainCommand", "Spectre.Console.Cli")]
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, "Spectre.Console.Cli.VersionCommand", "Spectre.Console.Cli")]
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, "Spectre.Console.Cli.XmlDocCommand", "Spectre.Console.Cli")]
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, "Spectre.Console.Cli.EmptyCommandSettings", "Spectre.Console.Cli")]
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, "Spectre.Console.Cli.OpenCliGeneratorCommand", "Spectre.Console.Cli")]
+    public static async Task<int> Main(string[] args)
+    {
+        var app = new CommandApp();
 
-    config.AddCommand<StreamsCommand>(CommandNames.Streams)
-        .WithDescription("Lists log streams of a log group.");
+        app.Configure(config =>
+        {
+            config.SetApplicationName("cwlogs");
+            config.SetInterceptor(new ColorInterceptor());
+            config.AddCommand<GroupsCommand>(CommandNames.Groups)
+                .WithDescription("Lists log groups.");
 
-    config.AddCommand<FetchCommand>(CommandNames.Fetch)
-        .WithDescription("Displays logs of a log group.");
+            config.AddCommand<StreamsCommand>(CommandNames.Streams)
+                .WithDescription("Lists log streams of a log group.");
 
-    config.AddCommand<TailCommand>(CommandNames.Tail)
-        .WithDescription("Follows logs of a log group live.");
+            config.AddCommand<FetchCommand>(CommandNames.Fetch)
+                .WithDescription("Displays logs of a log group.");
 
-    config.AddCommand<CompletionCommand>(CommandNames.Completion)
-        .WithDescription("Generates the auto-completion script for various shells (powershell, bash).");
+            config.AddCommand<TailCommand>(CommandNames.Tail)
+                .WithDescription("Follows logs of a log group live.");
 
-    config.AddCommand<CompleteCommand>(CommandNames.CompleteInternal)
-        .IsHidden();
+            config.AddCommand<CompletionCommand>(CommandNames.Completion)
+                .WithDescription("Generates the auto-completion script for various shells (powershell, bash).");
+
+            config.AddCommand<CompleteCommand>(CommandNames.CompleteInternal)
+                .IsHidden();
 #if DEBUG
-    config.PropagateExceptions();
-    config.ValidateExamples();
+            config.PropagateExceptions();
+            config.ValidateExamples();
 #endif
-});
+        });
 
-return await app.RunAsync(args);
+        return await app.RunAsync(args);
+    }
+}

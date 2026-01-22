@@ -9,7 +9,7 @@
         <SelfContained>true</SelfContained>
         <RuntimeIdentifier>win-x64</RuntimeIdentifier>
         <PublishReadyToRun>true</PublishReadyToRun>
-        <PublishTrimmed>false</PublishTrimmed>
+        <PublishTrimmed Condition="'$(PublishAot)' != 'true'">false</PublishTrimmed>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)' == 'Release'">

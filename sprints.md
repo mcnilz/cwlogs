@@ -155,4 +155,13 @@ Goal: Implementing a robust test suite without external dependencies.
 - [x] Refactoring of the command structure to support better testability (Interface-based client creation).
 - [x] Implementation of unit tests for the core logic of `GroupsCommand`, `StreamsCommand`, and `FetchCommand`.
 - [x] Implementation of unit tests for the completion system (`ReflectionUtils`, `CompleteCommand`).
-- [x] Verification of test coverage and integration into the development workflow.
+- [x] Verification of test coverage and development workflow.
+
+## Sprint 26: Native AOT Compilation
+Goal: Enabling high-performance, native compilation for faster startup and smaller deployment.
+- [x] Configuration of `PublishAot` in `cwlogs.csproj`.
+- [x] Implementation of JSON Source Generation (`AppJsonContext`) for log exports.
+- [x] Fix for AOT-specific reflection issues in `ReflectionUtils`.
+- [x] Manual registration of AWS SSO OIDC dependencies for AOT compatibility.
+- [x] Replacement of reflection-based exception formatting with AOT-compatible alternatives.
+- [x] Documentation of AOT build requirements (C++ build tools).

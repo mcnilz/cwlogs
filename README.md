@@ -24,11 +24,16 @@ To build `cwlogs` yourself, you need the [.NET 10 SDK](https://dotnet.microsoft.
    cd cwlogs
    ```
 
-2. Build and publish a single-file executable for Windows:
+2. Build and publish a single-file executable (Native AOT):
    ```powershell
-   dotnet publish cwlogs\cwlogs.csproj -c Release
+   dotnet publish cwlogs\cwlogs.csproj -c Release /p:PublishAot=true
    ```
+   **Note:** Native AOT compilation requires the **Desktop Development with C++** workload in Visual Studio (including MSVC v143 and Windows SDK).
+
    The resulting binary will be placed in the `dist/` directory.
+
+### Running the Application
+If you are using Native AOT, the resulting binary is a true native executable with minimal startup time. It is fully self-contained and does not require the .NET Runtime to be installed.
 
 ## Usage
 

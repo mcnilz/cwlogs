@@ -24,6 +24,8 @@ public class GlobalSettings : CommandSettings
 
     public virtual IAmazonCloudWatchLogs CreateClient()
     {
+        RegisterClientsForAot();
+
         var options = new AmazonCloudWatchLogsConfig();
         if (!string.IsNullOrEmpty(Region))
         {
@@ -56,5 +58,14 @@ public class GlobalSettings : CommandSettings
         return credentials != null
             ? new AmazonCloudWatchLogsClient(credentials, options)
             : new AmazonCloudWatchLogsClient(options);
+    }
+
+    private static void RegisterClientsForAot()
+    {
+        // For Native AOT, SSO support requires manual registration of dependencies
+        Amazon.RuntimeDependencies.GlobalRuntimeDependencyRegistry.Instance.RegisterSSOOIDCClient(
+            new Amazon.SSOOIDC.AmazonSSOOIDCClient());
+        Amazon.RuntimeDependencies.GlobalRuntimeDependencyRegistry.Instance.RegisterSSOClient(
+            new Amazon.SSO.AmazonSSOClient());
     }
 }

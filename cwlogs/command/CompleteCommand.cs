@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using Amazon.CloudWatchLogs;
 using cwlogs.Base;
 using cwlogs.settings;
@@ -28,25 +29,12 @@ public class CompleteCommand : AsyncCommand<CompleteCommand.Settings>
         {
             if (settings.Type == "metadata")
             {
-                var commandTypes = new Dictionary<string, System.Type>
-                {
-                    { CommandNames.Groups, typeof(GroupsCommand) },
-                    { CommandNames.Streams, typeof(StreamsCommand) },
-                    { CommandNames.Fetch, typeof(FetchCommand) },
-                    { CommandNames.Tail, typeof(TailCommand) },
-                    { CommandNames.Completion, typeof(CompletionCommand) }
-                };
-
-                foreach (var kvp in commandTypes)
-                {
-                    var options = ReflectionUtils.GetCommandOptions(kvp.Value);
-                    
-                    // Add help options (Standard in Spectre.Console)
-                    options.Add("-h");
-                    options.Add("--help");
-                    
-                    Console.WriteLine($"COMMAND:{kvp.Key}:{string.Join(",", options.Distinct())}");
-                }
+                PrintMetadata(CommandNames.Groups, typeof(GroupsCommand));
+                PrintMetadata(CommandNames.Streams, typeof(StreamsCommand));
+                PrintMetadata(CommandNames.Fetch, typeof(FetchCommand));
+                PrintMetadata(CommandNames.Tail, typeof(TailCommand));
+                PrintMetadata(CommandNames.Completion, typeof(CompletionCommand));
+                
                 return 0;
             }
 
@@ -63,12 +51,12 @@ public class CompleteCommand : AsyncCommand<CompleteCommand.Settings>
             else if (settings.Type == CommandNames.Streams && !string.IsNullOrEmpty(settings.GroupName))
             {
                 var response = await client.DescribeLogStreamsAsync(new Amazon.CloudWatchLogs.Model.DescribeLogStreamsRequest
-                {
-                    LogGroupName = settings.GroupName,
-                    OrderBy = OrderBy.LastEventTime,
-                    Descending = true,
-                    Limit = 50
-                }, cancellationToken);
+                                                                    {
+                                                                        LogGroupName = settings.GroupName,
+                                                                        OrderBy = OrderBy.LastEventTime,
+                                                                        Descending = true,
+                                                                        Limit = 50
+                                                                    }, cancellationToken);
                 foreach (var stream in response.LogStreams)
                 {
                     Console.WriteLine(stream.LogStreamName);
@@ -81,5 +69,13 @@ public class CompleteCommand : AsyncCommand<CompleteCommand.Settings>
         {
             return 1;
         }
+    }
+
+    private void PrintMetadata(string name, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] System.Type type)
+    {
+        var options = ReflectionUtils.GetCommandOptions(type);
+        options.Add("-h");
+        options.Add("--help");
+        Console.WriteLine($"COMMAND:{name}:{string.Join(",", options.Distinct())}");
     }
 }
