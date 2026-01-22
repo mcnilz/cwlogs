@@ -10,7 +10,7 @@ namespace cwlogs.Base;
 
 public abstract class LogBaseCommand<TSettings> : AsyncCommand<TSettings> where TSettings : FetchSettings
 {
-    protected static async Task<List<string>?> ResolveStreams(AmazonCloudWatchLogsClient client, string groupName,
+    public static async Task<List<string>?> ResolveStreams(IAmazonCloudWatchLogs client, string groupName,
         string? streamParam, CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(streamParam)) return null;

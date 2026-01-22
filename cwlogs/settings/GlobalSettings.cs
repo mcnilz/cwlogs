@@ -22,7 +22,7 @@ public class GlobalSettings : CommandSettings
     [Description("Disable color output (useful for CI/CD).")]
     public bool NoColor { get; [UsedImplicitly] init; }
 
-    public AmazonCloudWatchLogsClient CreateClient()
+    public virtual IAmazonCloudWatchLogs CreateClient()
     {
         var options = new AmazonCloudWatchLogsConfig();
         if (!string.IsNullOrEmpty(Region))

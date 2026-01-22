@@ -147,3 +147,12 @@ Goal: Slimming down base classes and commands by extracting logic into utilities
 - [x] Outsourcing of shell completion script generation to `cwlogs/shell`.
 - [x] Refactoring of commands to use the new utility structure.
 - [x] Verification of build and functionality.
+
+## Sprint 25: Automated Testing
+Goal: Implementing a robust test suite without external dependencies.
+- [x] Setup of the `cwlogs.Tests` project with xUnit, Moq, and FluentAssertions.
+- [x] Implementation of unit tests for all utility classes (`TimeUtils`, `JsonUtils`, `LambdaUtils`).
+- [x] Refactoring of the command structure to support better testability (Interface-based client creation).
+- [x] Implementation of unit tests for the core logic of `GroupsCommand`, `StreamsCommand`, and `FetchCommand`.
+- [x] Implementation of unit tests for the completion system (`ReflectionUtils`, `CompleteCommand`).
+- [x] Verification of test coverage and integration into the development workflow.

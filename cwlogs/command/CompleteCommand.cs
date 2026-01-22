@@ -15,11 +15,11 @@ public class CompleteCommand : AsyncCommand<CompleteCommand.Settings>
     {
         [CommandOption("--groups <GROUPS>")]
         [Description("Name of the log group for stream completion")]
-        public string? GroupName { get; init; }
+        public virtual string? GroupName { get; init; }
         
         [CommandOption("--type <TYPE>")]
         [Description("Type of completion (groups, streams, metadata)")]
-        public string? Type { get; init; }
+        public virtual string? Type { get; init; }
     }
 
     public override async Task<int> ExecuteAsync(CommandContext context, Settings settings, CancellationToken cancellationToken)

@@ -72,5 +72,9 @@ A simple command-line tool (CLI) to search, list, and live-tail AWS CloudWatch L
 - Optimization: Single-file executable for easy handling.
 - **Release Directory:** For a production build (Release), the finished binary should automatically be placed in a `dist` folder in the project directory.
 
-## 10. Code Quality (Sprint 17)
+## 10. Code Quality (Sprint 17 & 25)
 - Centralization of command names in a dedicated `CommandNames` class to avoid string duplication.
+- **Automated Testing:** Implementation of a comprehensive test suite using xUnit, Moq, and FluentAssertions.
+    - Unit tests for utility classes (Time, JSON, Lambda cleaning, Reflection).
+    - Unit tests for command logic using mocked AWS SDK clients, including the internal completion command.
+    - Adherence to the Test Pyramid (focus on unit and integration tests without external dependencies).
