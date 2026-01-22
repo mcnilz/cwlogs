@@ -31,4 +31,12 @@ public class FetchSettings : StreamsSettings
     [CommandOption("--clean")]
     [Description("Removes AWS Lambda prefix (Timestamp, RequestID, Level) from the message.")]
     public bool Clean { get; [UsedImplicitly] init; }
+
+    [CommandOption("--json")]
+    [Description("Outputs log entries as JSON objects.")]
+    public bool Json { get; [UsedImplicitly] init; }
+
+    [CommandOption("--since <SINCE>")]
+    [Description("Only show logs after a specific time (e.g., '1h', '30m', '2025-01-22').")]
+    public string? Since { get; [UsedImplicitly] init; }
 }

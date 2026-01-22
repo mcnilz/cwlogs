@@ -126,3 +126,24 @@ Goal: Support for Bash and preparation for further shells.
 - [x] Updating `README.md` for Bash support.
 - [x] Adjustment of requirements.
 - [x] Removal of PowerShell default in the completion command.
+
+## Sprint 21: Translation and CI Readiness
+Goal: Internationalization and CI/CD optimization.
+- [x] Translation of all components (code, help, docs) to English.
+- [x] Implementation of the `--no-color` option for CI/CD compatibility.
+- [x] Refactoring: Moved `NoColor` logic to a `CommandInterceptor` for better separation of concerns (Clean Code).
+
+## Sprint 22: Advanced Log Processing
+Goal: Improved log format support and filtering.
+- [x] Implementation of the `--json` option for structured log output.
+- [x] Implementation of the `--since` parameter for time-based filtering (e.g., '1h', '30m', '1d', or specific date).
+- [x] Integration of advanced filtering into `fetch` and `tail`.
+- [x] Update documentation (README, Requirements).
+
+## Sprint 24: Code Refactoring (Clean Code)
+Goal: Slimming down base classes and commands by extracting logic into utilities.
+- [x] Extraction of time parsing, JSON processing, and Lambda cleaning to utility classes in `cwlogs/util`.
+- [x] Extraction of metadata reflection logic to `ReflectionUtils`.
+- [x] Outsourcing of shell completion script generation to `cwlogs/shell`.
+- [x] Refactoring of commands to use the new utility structure.
+- [x] Verification of build and functionality.

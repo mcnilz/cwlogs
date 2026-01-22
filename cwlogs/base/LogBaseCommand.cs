@@ -1,6 +1,8 @@
+using System.Text.Json;
 using Amazon.CloudWatchLogs;
 using Amazon.CloudWatchLogs.Model;
 using cwlogs.settings;
+using cwlogs.util;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
@@ -32,11 +34,26 @@ public abstract class LogBaseCommand<TSettings> : AsyncCommand<TSettings> where 
 
     protected static void PrintLogEvent(FilteredLogEvent ev, FetchSettings settings)
     {
+        if (settings.Json)
+        {
+            var messageContent = JsonUtils.ParseMessage(ev.Message);
+
+            var json = JsonSerializer.Serialize(new
+            {
+                Timestamp = DateTimeOffset.FromUnixTimeMilliseconds(ev.Timestamp ?? 0).ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
+                Stream = ev.LogStreamName,
+                Message = messageContent,
+                EventId = ev.EventId
+            });
+            Console.WriteLine(json);
+            return;
+        }
+
         var message = ev.Message.TrimEnd();
 
         if (settings.Clean)
         {
-            message = CleanLambdaMessage(message);
+            message = LambdaUtils.CleanLambdaMessage(message);
         }
 
         if (settings.SingleLine) message = message.Replace("\r", "").Replace("\n", " ");
@@ -48,35 +65,14 @@ public abstract class LogBaseCommand<TSettings> : AsyncCommand<TSettings> where 
         else
         {
             var dt = DateTimeOffset.FromUnixTimeMilliseconds(ev.Timestamp ?? 0).DateTime.ToLocalTime();
-            AnsiConsole.MarkupLine($"[{Color.Grey}]{dt:yyyy-MM-dd HH:mm:ss}[/] {Markup.Escape(message)}");
-        }
-    }
-
-    private static string CleanLambdaMessage(string message)
-    {
-        // Example: 2026-01-22T08:24:52.392Z 0fbd43a3-1435-4cc0-8209-2de3b5f1a461 INFO
-        var parts = message.Split(['\t', ' '], StringSplitOptions.RemoveEmptyEntries);
-        if (parts.Length >= 3)
-        {
-            if (parts[0].Contains('T') && parts[0].EndsWith('Z') && parts[1].Contains('-'))
+            if (settings.NoColor)
             {
-                var foundCount = 0;
-                var currentPos = 0;
-
-                while (foundCount < 3 && currentPos < message.Length)
-                {
-                    while (currentPos < message.Length && !char.IsWhiteSpace(message[currentPos])) currentPos++;
-                    foundCount++;
-                    while (currentPos < message.Length && char.IsWhiteSpace(message[currentPos])) currentPos++;
-                }
-
-                if (foundCount >= 3)
-                {
-                    return message.Substring(currentPos).TrimStart();
-                }
+                Console.WriteLine($"{dt:yyyy-MM-dd HH:mm:ss} {message}");
+            }
+            else
+            {
+                AnsiConsole.MarkupLine($"[{Color.Grey}]{dt:yyyy-MM-dd HH:mm:ss}[/] {Markup.Escape(message)}");
             }
         }
-
-        return message;
     }
 }

@@ -32,7 +32,10 @@ public class StreamsCommand : AsyncCommand<StreamsSettings>
                 }, cancellationToken);
 
             var table = new Table().NoBorder();
-            table.Title = new TableTitle($"Log Streams for {groupName}");
+            if (!settings.NoColor)
+            {
+                table.Title = new TableTitle($"Log Streams for {groupName}");
+            }
             table.AddColumn("Log Stream Name");
 
             foreach (var stream in response.LogStreams)

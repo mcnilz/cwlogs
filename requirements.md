@@ -26,6 +26,9 @@ A simple command-line tool (CLI) to search, list, and live-tail AWS CloudWatch L
 - Continuous retrieval of new log entries ("Live Tail").
 - Similar to `tail -f`.
 
+### 2.6 Global Options
+- `--no-color`: Disables ANSI color sequences in the output, which is helpful for CI/CD pipelines and log file redirection.
+
 ## 3. Non-functional Requirements
 - **Technology:** .NET 10 (C#).
 - **Usability:** Intuitive commands, help texts.
@@ -34,17 +37,19 @@ A simple command-line tool (CLI) to search, list, and live-tail AWS CloudWatch L
 ## 4. Planned Commands (Proposal)
 - `cwlogs groups` - Lists log groups.
 - `cwlogs streams [<group-name>] [-g|--group <group-name>]` - Lists streams of a group.
-- `cwlogs fetch [<group-name>] [-g|--group <group-name>] [-s|--stream <name|number>] [--limit <n>] [--sort <asc|desc>] [--single-line] [--raw] [--clean]` - Displays logs.
-- `cwlogs tail [<group-name>] [-g|--group <group-name>] [-s|--stream <name|number>] [--limit <n>] [--single-line] [--raw] [--clean]` - Follows logs live.
+- `cwlogs fetch [<group-name>] [-g|--group <group-name>] [-s|--stream <name|number>] [--limit <n>] [--sort <asc|desc>] [--since <t>] [--single-line] [--raw] [--json] [--clean]` - Displays logs.
+- `cwlogs tail [<group-name>] [-g|--group <group-name>] [-s|--stream <name|number>] [--limit <n>] [--since <t>] [--single-line] [--raw] [--json] [--clean]` - Follows logs live.
 
-## 5. Extended Requirements (Sprint 6)
+## 5. Extended Requirements (Sprint 6 & 22)
 - **Table Design:** Spectre.Console tables should have no border by default.
 - **Stream Selection:** In `fetch` and `tail`, a stream can be selected by name or index (number). A number `n` selects the `n` latest streams.
 - **Limit:** Parameter `--limit` to limit the number of retrieved log entries.
 - **Sorting:** Parameter `--sort` to control the sort order (`asc` or `desc`).
+- **Time Filtering:** Parameter `--since` to retrieve logs from a certain point in time (e.g., '1h', '30m', '1d').
 - **Formatting:**
     - `--single-line`: Log entries are output on a single line (removes newlines within an entry).
     - `--raw`: Only the log text itself is output, without timestamps or other tool prefixes.
+    - `--json`: Log entries are output as structured JSON objects. If the message itself is a valid JSON, it is embedded as an object/array instead of a double-encoded string.
     - `--clean`: Removes AWS-specific prefixes (e.g., from Lambda: Timestamp, RequestID, Log Level) from the message.
 
 ## 6. Robust Completion (Sprint 11)

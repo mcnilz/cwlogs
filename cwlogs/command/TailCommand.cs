@@ -1,6 +1,6 @@
-﻿using Amazon.CloudWatchLogs;
-using cwlogs.Base;
+﻿using cwlogs.Base;
 using cwlogs.settings;
+using cwlogs.util;
 using JetBrains.Annotations;
 using Spectre.Console;
 using Spectre.Console.Cli;
@@ -24,7 +24,7 @@ public class TailCommand : LogBaseCommand<FetchSettings>
                 return 1;
             }
 
-            var lastTimestamp = DateTimeOffset.UtcNow.AddMinutes(-5).ToUnixTimeMilliseconds();
+            var lastTimestamp = TimeUtils.ParseSince(settings.Since) ?? DateTimeOffset.UtcNow.AddMinutes(-5).ToUnixTimeMilliseconds();
 
             var streams = await ResolveStreams(client, groupName, settings.Stream, cancellationToken);
 

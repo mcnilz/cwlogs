@@ -18,6 +18,10 @@ public class GlobalSettings : CommandSettings
     [Description("The AWS region.")]
     public string? Region { get; [UsedImplicitly] init; }
 
+    [CommandOption("--no-color")]
+    [Description("Disable color output (useful for CI/CD).")]
+    public bool NoColor { get; [UsedImplicitly] init; }
+
     public AmazonCloudWatchLogsClient CreateClient()
     {
         var options = new AmazonCloudWatchLogsConfig();

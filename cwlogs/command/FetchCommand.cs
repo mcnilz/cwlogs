@@ -1,6 +1,6 @@
-﻿using Amazon.CloudWatchLogs;
-using cwlogs.Base;
+﻿using cwlogs.Base;
 using cwlogs.settings;
+using cwlogs.util;
 using JetBrains.Annotations;
 using Spectre.Console;
 using Spectre.Console.Cli;
@@ -25,16 +25,21 @@ public class FetchCommand : LogBaseCommand<FetchSettings>
             }
 
             var streams = await ResolveStreams(client, groupName, settings.Stream, cancellationToken);
+            var startTime = TimeUtils.ParseSince(settings.Since);
 
             var descending = settings.Sort.Equals("desc", StringComparison.OrdinalIgnoreCase);
 
             if (streams == null || streams.Count == 0)
             {
-                var response = await client.FilterLogEventsAsync(new Amazon.CloudWatchLogs.Model.FilterLogEventsRequest
+                var request = new Amazon.CloudWatchLogs.Model.FilterLogEventsRequest
                 {
                     LogGroupName = groupName,
                     Limit = settings.Limit
-                }, cancellationToken);
+                };
+
+                if (startTime.HasValue) request.StartTime = startTime.Value;
+
+                var response = await client.FilterLogEventsAsync(request, cancellationToken);
 
                 var events = response.Events;
                 events = descending
@@ -55,6 +60,8 @@ public class FetchCommand : LogBaseCommand<FetchSettings>
                     LogStreamNames = streams,
                     Limit = settings.Limit
                 };
+
+                if (startTime.HasValue) request.StartTime = startTime.Value;
 
                 var response = await client.FilterLogEventsAsync(request, cancellationToken);
                 var events = response.Events;

@@ -1,4 +1,5 @@
-﻿using cwlogs.Base;
+﻿using cwlogs;
+using cwlogs.Base;
 using cwlogs.command;
 using Spectre.Console.Cli;
 
@@ -7,6 +8,7 @@ var app = new CommandApp();
 app.Configure(config =>
 {
     config.SetApplicationName("cwlogs");
+    config.SetInterceptor(new ColorInterceptor());
     config.AddCommand<GroupsCommand>(CommandNames.Groups)
         .WithDescription("Lists log groups.");
 

@@ -2,6 +2,7 @@ using System.ComponentModel;
 using Amazon.CloudWatchLogs;
 using cwlogs.Base;
 using cwlogs.settings;
+using cwlogs.util;
 using JetBrains.Annotations;
 using Spectre.Console.Cli;
 
@@ -27,9 +28,6 @@ public class CompleteCommand : AsyncCommand<CompleteCommand.Settings>
         {
             if (settings.Type == "metadata")
             {
-                // Da wir das Model nicht direkt über den Context bekommen können (Einschränkungen der SDK-Version/Compiler),
-                // nutzen wir eine Liste der Commands und deren Optionen, die wir über die Typen der Commands ermitteln.
-                
                 var commandTypes = new Dictionary<string, System.Type>
                 {
                     { CommandNames.Groups, typeof(GroupsCommand) },
@@ -41,60 +39,13 @@ public class CompleteCommand : AsyncCommand<CompleteCommand.Settings>
 
                 foreach (var kvp in commandTypes)
                 {
-                    var name = kvp.Key;
-                    var type = kvp.Value;
-                    var optionList = new List<string>();
+                    var options = ReflectionUtils.GetCommandOptions(kvp.Value);
                     
-                    // Wir suchen nach dem Settings-Typ. 
-                    // AsyncCommand<TSettings> oder Command<TSettings>
-                    var currentType = type;
-                    System.Type? settingsType = null;
-                    while (currentType != null && currentType != typeof(object))
-                    {
-                        if (currentType.IsGenericType && (currentType.GetGenericTypeDefinition().Name.Contains("AsyncCommand") || currentType.GetGenericTypeDefinition().Name.Contains("Command")))
-                        {
-                            settingsType = currentType.GetGenericArguments().FirstOrDefault();
-                            if (settingsType != null) break;
-                        }
-                        currentType = currentType.BaseType;
-                    }
-
-                    if (settingsType != null)
-                    {
-                        var currentSettingsType = settingsType;
-                        while (currentSettingsType != null && currentSettingsType != typeof(object))
-                        {
-                            foreach (var prop in currentSettingsType.GetProperties(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.DeclaredOnly))
-                            {
-                                // Wir nutzen dynamische Typprüfung, um das Attribut zu finden, 
-                                // da wir den Typen selbst (CommandOptionAttribute) nicht direkt nutzen können 
-                                // für den Vergleich in manchen Kontexten.
-                                foreach (var attr in prop.GetCustomAttributes(true))
-                                {
-                                    if (attr.GetType().Name == "CommandOptionAttribute")
-                                    {
-                                        var shorts = attr.GetType().GetProperty("ShortNames")?.GetValue(attr) as System.Collections.IEnumerable;
-                                        var longs = attr.GetType().GetProperty("LongNames")?.GetValue(attr) as System.Collections.IEnumerable;
-                                        if (shorts != null)
-                                        {
-                                            foreach (var s in shorts) if (s != null) optionList.Add("-" + s);
-                                        }
-                                        if (longs != null)
-                                        {
-                                            foreach (var l in longs) if (l != null) optionList.Add("--" + l);
-                                        }
-                                    }
-                                }
-                            }
-                            currentSettingsType = currentSettingsType.BaseType;
-                        }
-                    }
+                    // Add help options (Standard in Spectre.Console)
+                    options.Add("-h");
+                    options.Add("--help");
                     
-                    // Hilfe-Optionen hinzufügen (Standard in Spectre.Console)
-                    optionList.Add("-h");
-                    optionList.Add("--help");
-                    
-                    Console.WriteLine($"COMMAND:{name}:{string.Join(",", optionList.Distinct())}");
+                    Console.WriteLine($"COMMAND:{kvp.Key}:{string.Join(",", options.Distinct())}");
                 }
                 return 0;
             }
@@ -103,7 +54,7 @@ public class CompleteCommand : AsyncCommand<CompleteCommand.Settings>
 
             if (settings.Type == CommandNames.Groups)
             {
-                var response = await client.DescribeLogGroupsAsync(new Amazon.CloudWatchLogs.Model.DescribeLogGroupsRequest());
+                var response = await client.DescribeLogGroupsAsync(new Amazon.CloudWatchLogs.Model.DescribeLogGroupsRequest(), cancellationToken);
                 foreach (var group in response.LogGroups)
                 {
                     Console.WriteLine(group.LogGroupName);
@@ -117,7 +68,7 @@ public class CompleteCommand : AsyncCommand<CompleteCommand.Settings>
                     OrderBy = OrderBy.LastEventTime,
                     Descending = true,
                     Limit = 50
-                });
+                }, cancellationToken);
                 foreach (var stream in response.LogStreams)
                 {
                     Console.WriteLine(stream.LogStreamName);

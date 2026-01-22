@@ -44,6 +44,7 @@ To build `cwlogs` yourself, you need the [.NET 10 SDK](https://dotnet.microsoft.
 
 - `-p|--profile <PROFILE>`: Specify the AWS profile to use.
 - `-r|--region <REGION>`: Specify the AWS region.
+- `--no-color`: Disables ANSI color output (ideal for CI/CD).
 
 ### Fetch & Tail Options
 
@@ -51,8 +52,10 @@ To build `cwlogs` yourself, you need the [.NET 10 SDK](https://dotnet.microsoft.
 - `-s|--stream <STREAM>`: Filter by Log Stream name or use a number `n` to select the `n` most recent streams.
 - `-l|--limit <LIMIT>`: Maximum number of log entries to retrieve (Default: 50).
 - `--sort <asc|desc>`: Sort order (only for `fetch`, default is `desc`).
+- `--since <SINCE>`: Only show logs after a specific time (e.g., '1h', '30m', '1d', or a date like '2025-01-22').
 - `--single-line`: Collapses multi-line log entries into a single line.
 - `--raw`: Outputs only the log message without timestamps or colors.
+- `--json`: Outputs log entries as JSON objects.
 - `--clean`: Removes AWS Lambda-specific metadata (timestamps, request IDs) from the message.
 
 ### Examples
