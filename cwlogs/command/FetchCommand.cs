@@ -16,7 +16,15 @@ public class FetchCommand : LogBaseCommand<FetchSettings>
         try
         {
             using var client = settings.CreateClient();
-            var streams = await ResolveStreams(client, settings.GroupName, settings.Stream, cancellationToken);
+            var groupName = settings.ResolvedGroupName;
+
+            if (string.IsNullOrEmpty(groupName))
+            {
+                AnsiConsole.MarkupLine("[red]Fehler: Log-Gruppen-Name muss angegeben werden.[/]");
+                return 1;
+            }
+
+            var streams = await ResolveStreams(client, groupName, settings.Stream, cancellationToken);
 
             var descending = settings.Sort.Equals("desc", StringComparison.OrdinalIgnoreCase);
 
@@ -24,7 +32,7 @@ public class FetchCommand : LogBaseCommand<FetchSettings>
             {
                 var response = await client.FilterLogEventsAsync(new Amazon.CloudWatchLogs.Model.FilterLogEventsRequest
                 {
-                    LogGroupName = settings.GroupName,
+                    LogGroupName = groupName,
                     Limit = settings.Limit
                 }, cancellationToken);
 
@@ -43,7 +51,7 @@ public class FetchCommand : LogBaseCommand<FetchSettings>
                 // If multiple streams are resolved (e.g. from index), we use FilterLogEvents
                 var request = new Amazon.CloudWatchLogs.Model.FilterLogEventsRequest
                 {
-                    LogGroupName = settings.GroupName,
+                    LogGroupName = groupName,
                     LogStreamNames = streams,
                     Limit = settings.Limit
                 };

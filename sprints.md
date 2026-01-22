@@ -51,3 +51,49 @@ Dieses Dokument unterteilt die Entwicklung in drei Sprints.
 - [x] Einführung einer Basisklasse `LogBaseCommand` für gemeinsame Funktionalität von `fetch` und `tail`.
 - [x] Extraktion von `ResolveStreams`, `PrintLogEvent` und `CleanLambdaMessage`.
 - [x] Refactoring von `FetchCommand` und `TailCommand` zur Nutzung der Basisklasse.
+
+## Sprint 9: Auto-Completion
+**Ziel:** Unterstützung für PowerShell Auto-Completion.
+- [x] Implementierung eines versteckten `_complete` Befehls für dynamische Daten.
+- [x] Implementierung des `completion` Befehls zur Generierung des PowerShell-Scripts.
+- [x] Unterstützung für Befehle, Optionen, Log-Gruppen und Log-Streams.
+- [x] Dokumentation der Installation des Scripts.
+
+## Sprint 10: Completion-Verfeinerung
+**Ziel:** Robusteres PowerShell-Completion-Skript.
+- [x] Verbesserung der Positionsargument-Erkennung (LogGroups).
+- [x] Berücksichtigung von Optionen bei der Argument-Zählung.
+- [x] Stabilisierung der LogStream-Vervollständigung.
+- [x] Fix für `cwlogs fetch <TAB>` bei leerem Completion-Präfix.
+- [x] Fallback-Logik für Gruppen-Vervollständigung hinzugefügt.
+
+## Sprint 11: Robuste Resource-Completion
+Ziel: Erhöhung der Zuverlässigkeit der Vervollständigung durch explizite Parameter.
+- [x] Einführung der `--group` Option für alle relevanten Befehle.
+- [x] Anpassung der Command-Logik zur Bevorzugung von `--group`.
+- [x] Aktualisierung des PowerShell-Completion-Skripts zur Nutzung von `--group`.
+- [x] Verbesserung der Erkennung von Log-Gruppen in komplexen Befehlszeilen.
+
+## Sprint 12: Pfad-Robustheit der Completion
+Ziel: Sicherstellen, dass die Completion auch funktioniert, wenn das Tool nicht im PATH ist.
+- [x] Ermittlung des absoluten Pfads zum Executable in `CompletionCommand`.
+- [x] Nutzung des absoluten Pfads innerhalb des generierten PowerShell-Skripts.
+- [x] Registrierung des Completers für Dateinamen mit und ohne `.exe` Erweiterung.
+
+## Sprint 13: Production Build (Single Binary)
+Ziel: Erstellung eines eigenständigen Executables ohne .NET Abhängigkeiten.
+- [x] Konfiguration des Projekts für `SelfContained` und `PublishSingleFile`.
+- [x] Deaktivierung von Trimming zur Sicherstellung der Kompatibilität mit Spectre.Console.Cli.
+- [x] Verifizierung des Single-File Builds.
+- [x] Dokumentation der Build-Parameter.
+
+## Sprint 14: Release Distribution
+Ziel: Automatisierung der Ablage des fertigen Binaries.
+- [x] Konfiguration des `PublishDir` in der Projektdatei für Release-Builds.
+- [x] Sicherstellung, dass der `dist`-Ordner verwendet wird.
+- [x] Verifizierung des Publish-Outputs.
+
+## Sprint 15: Completion Priorisierung
+Ziel: Verbesserung der UX durch gezielte Vervollständigung von Optionen.
+- [x] Priorisierung von Optionen in der Completion-Logik, wenn das Präfix `-` oder `--` ist.
+- [x] Unterdrückung von dynamischen Ressourcen-Vorschlägen (Groups/Streams) bei Options-Eingabe.

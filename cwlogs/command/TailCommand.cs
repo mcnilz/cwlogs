@@ -16,17 +16,25 @@ public class TailCommand : LogBaseCommand<FetchSettings>
         try
         {
             using var client = settings.CreateClient();
+            var groupName = settings.ResolvedGroupName;
+
+            if (string.IsNullOrEmpty(groupName))
+            {
+                AnsiConsole.MarkupLine("[red]Fehler: Log-Gruppen-Name muss angegeben werden.[/]");
+                return 1;
+            }
+
             var lastTimestamp = DateTimeOffset.UtcNow.AddMinutes(-5).ToUnixTimeMilliseconds();
 
-            var streams = await ResolveStreams(client, settings.GroupName, settings.Stream, cancellationToken);
+            var streams = await ResolveStreams(client, groupName, settings.Stream, cancellationToken);
 
-            AnsiConsole.MarkupLine($"[yellow]Tailing logs for {settings.GroupName}...[/]");
+            AnsiConsole.MarkupLine($"[yellow]Tailing logs for {groupName}...[/]");
 
             while (!cancellationToken.IsCancellationRequested)
             {
                 var request = new Amazon.CloudWatchLogs.Model.FilterLogEventsRequest
                 {
-                    LogGroupName = settings.GroupName,
+                    LogGroupName = groupName,
                     StartTime = lastTimestamp + 1,
                     Limit = settings.Limit
                 };

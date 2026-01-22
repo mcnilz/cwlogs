@@ -15,15 +15,24 @@ public class StreamsCommand : AsyncCommand<StreamsSettings>
         try
         {
             using var client = settings.CreateClient();
+            var groupName = settings.ResolvedGroupName;
+
+            if (string.IsNullOrEmpty(groupName))
+            {
+                AnsiConsole.MarkupLine("[red]Fehler: Log-Gruppen-Name muss angegeben werden.[/]");
+                return 1;
+            }
+
             var response = await client.DescribeLogStreamsAsync(
                 new Amazon.CloudWatchLogs.Model.DescribeLogStreamsRequest
                 {
-                    LogGroupName = settings.GroupName,
+                    LogGroupName = groupName,
                     OrderBy = OrderBy.LastEventTime,
                     Descending = true
                 }, cancellationToken);
 
             var table = new Table().NoBorder();
+            table.Title = new TableTitle($"Log Streams for {groupName}");
             table.AddColumn("Log Stream Name");
 
             foreach (var stream in response.LogStreams)
