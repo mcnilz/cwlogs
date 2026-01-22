@@ -7,14 +7,159 @@ using Spectre.Console.Cli;
 namespace cwlogs.command;
 
 [UsedImplicitly]
-public class CompletionCommand : AsyncCommand<GlobalSettings>
+public class CompletionCommand : AsyncCommand<CompletionSettings>
 {
-    public override Task<int> ExecuteAsync(CommandContext context, GlobalSettings settings, CancellationToken cancellationToken)
+    public override Task<int> ExecuteAsync(CommandContext context, CompletionSettings settings, CancellationToken cancellationToken)
     {
+        if (string.IsNullOrEmpty(settings.Shell))
+        {
+            AnsiConsole.MarkupLine("[red]Fehler: Bitte geben Sie eine Shell an (powershell, bash).[/]");
+            AnsiConsole.WriteLine("Beispiel: cwlogs completion powershell");
+            return Task.FromResult(1);
+        }
+
         var exePath = System.Diagnostics.Process.GetCurrentProcess().MainModule?.FileName ?? "cwlogs";
         var exeName = System.IO.Path.GetFileNameWithoutExtension(exePath);
+
+        if (settings.Shell.Equals("bash", StringComparison.OrdinalIgnoreCase))
+        {
+            AnsiConsole.WriteLine(GenerateBashScript(exePath, exeName));
+        }
+        else if (settings.Shell.Equals("powershell", StringComparison.OrdinalIgnoreCase))
+        {
+            AnsiConsole.WriteLine(GeneratePowerShellScript(exePath, exeName));
+        }
+        else
+        {
+            AnsiConsole.MarkupLine($"[red]Fehler: Nicht unterstützte Shell '{settings.Shell}'. Unterstützt werden: powershell, bash.[/]");
+            return Task.FromResult(1);
+        }
+
+        return Task.FromResult(0);
+    }
+
+    private string GenerateBashScript(string exePath, string exeName)
+    {
+        return $@"
+_{exeName}_completions()
+{{
+    local cur prev opts
+    COMPREPLY=()
+    cur=""${{COMP_WORDS[COMP_CWORD]}}""
+    prev=""${{COMP_WORDS[COMP_CWORD-1]}}""
+
+    # Dynamische Metadaten laden
+    local metadata=$( '{exePath}' {CommandNames.CompleteInternal} --type metadata )
+    local commands=()
+    
+    while IFS= read -r line; do
+        if [[ $line =~ ^COMMAND:([^:]+):(.*)$ ]]; then
+            commands+=(""${{BASH_REMATCH[1]}}"")
+        fi
+    done <<< ""$metadata""
+
+    if [[ ${{#commands[@]}} -eq 0 ]]; then
+        commands=('{CommandNames.Groups}' '{CommandNames.Streams}' '{CommandNames.Fetch}' '{CommandNames.Tail}' '{CommandNames.Completion}')
+    fi
+
+    # Erkenne den aktuellen Unterbefehl
+    local subcmd=""""
+    if [[ $COMP_CWORD -gt 1 ]]; then
+        subcmd=""${{COMP_WORDS[1]}}""
+    fi
+
+    # 1. Vervollständigung von Befehlen
+    if [[ $COMP_CWORD -eq 1 ]]; then
+        COMPREPLY=( $(compgen -W ""${{commands[*]}}"" -- ""$cur"") )
+        return 0
+    fi
+
+    # 2. Vervollständigung von Optionen
+    if [[ ""$cur"" == -* ]]; then
+        local cmd_opts=""""
+        while IFS= read -r line; do
+            if [[ $line =~ ^COMMAND:$subcmd:(.*)$ ]]; then
+                cmd_opts=${{BASH_REMATCH[1]//,/ }}
+                break
+            fi
+        done <<< ""$metadata""
         
-        var script = $@"
+        local all_opts=""-p --profile -r --region -h --help $cmd_opts""
+        COMPREPLY=( $(compgen -W ""$all_opts"" -- ""$cur"") )
+        return 0
+    fi
+
+    # 3. Vervollständigung von LogGroups
+    if [[ ""$subcmd"" =~ ^({CommandNames.Streams}|{CommandNames.Fetch}|{CommandNames.Tail})$ ]]; then
+        # Wenn prev --group oder -g ist, oder wir am ersten Positionsargument sind
+        if [[ ""$prev"" == ""--group"" || ""$prev"" == ""-g"" ]]; then
+             local groups=$( '{exePath}' {CommandNames.CompleteInternal} --type {CommandNames.Groups} )
+             COMPREPLY=( $(compgen -W ""$groups"" -- ""$cur"") )
+             return 0
+        fi
+
+        # Einfache Prüfung auf erstes Positionsargument (sehr grob für Bash)
+        local pos_args=0
+        for (( i=2; i < COMP_CWORD; i++ )); do
+            if [[ ! ""${{COMP_WORDS[i]}}"" == -* ]]; then
+                # Prüfe ob das vorherige Wort eine Option war die einen Wert erwartet
+                # In unserem Fall haben fast alle Optionen Werte außer --raw, --clean, --single-line
+                if [[ $i -gt 2 ]]; then
+                    local p=${{COMP_WORDS[i-1]}}
+                    if [[ ""$p"" == ""--raw"" || ""$p"" == ""--clean"" || ""$p"" == ""--single-line"" ]]; then
+                         ((pos_args++))
+                    fi
+                else
+                     ((pos_args++))
+                fi
+            fi
+        done
+
+        if [[ $pos_args -eq 0 && ! ""$cur"" == -* ]]; then
+             local groups=$( '{exePath}' {CommandNames.CompleteInternal} --type {CommandNames.Groups} )
+             COMPREPLY=( $(compgen -W ""$groups"" -- ""$cur"") )
+             return 0
+        fi
+    fi
+
+    # 4. Vervollständigung von LogStreams
+    if [[ ""$prev"" == ""--stream"" || ""$prev"" == ""-s"" ]]; then
+        # Suche nach der Gruppe
+        local group=""""
+        for (( i=2; i < COMP_CWORD; i++ )); do
+             if [[ ""${{COMP_WORDS[i]}}"" == ""--group"" || ""${{COMP_WORDS[i]}}"" == ""-g"" ]]; then
+                 group=""${{COMP_WORDS[i+1]}}""
+                 break
+             fi
+        done
+        
+        if [[ -z ""$group"" ]]; then
+            # Nehme das erste Positionsargument
+            for (( i=2; i < COMP_CWORD; i++ )); do
+                if [[ ! ""${{COMP_WORDS[i]}}"" == -* ]]; then
+                    group=""${{COMP_WORDS[i]}}""
+                    break
+                fi
+            done
+        fi
+
+        if [[ -n ""$group"" ]]; then
+            local streams=$( '{exePath}' {CommandNames.CompleteInternal} --type {CommandNames.Streams} --groups ""$group"" )
+            COMPREPLY=( $(compgen -W ""$streams"" -- ""$cur"") )
+            return 0
+        fi
+    fi
+
+    return 0
+}}
+
+complete -F _{exeName}_completions {exeName}
+".Trim();
+    }
+
+    private string GeneratePowerShellScript(string exePath, string exeName)
+    {
+        return $@"
 $cwlogsCompleter = {{
     param($wordToComplete, $commandAst, $cursorPosition)
 
@@ -162,8 +307,6 @@ $cwlogsCompleter = {{
 
 Register-ArgumentCompleter -Native -CommandName '{exeName}' -ScriptBlock $cwlogsCompleter
 Register-ArgumentCompleter -Native -CommandName '{exeName}.exe' -ScriptBlock $cwlogsCompleter
-";
-        AnsiConsole.WriteLine(script.Trim());
-        return Task.FromResult(0);
+".Trim();
     }
 }

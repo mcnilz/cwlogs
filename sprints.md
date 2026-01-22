@@ -108,3 +108,21 @@ Ziel: Erhöhung der Wartbarkeit durch dynamisches Laden von Befehlen und Optione
 Ziel: Verbesserung der Wartbarkeit durch Vermeidung von String-Duplikaten.
 - [x] Einführung der Klasse `CommandNames` für Command-Name Konstanten.
 - [x] Refactoring von `Program.cs`, `CompleteCommand.cs` und `CompletionCommand.cs` zur Nutzung der Konstanten.
+
+## Sprint 18: Projektdokumentation
+Ziel: Erstellung einer professionellen README für GitHub.
+- [x] Erstellung der `README.md` auf Englisch.
+- [x] Dokumentation der Features, Installation und Benutzung.
+
+## Sprint 19: Lizenzierung
+Ziel: Hinzufügen der MIT-Lizenz.
+- [x] Erstellung der `LICENSE` Datei.
+- [x] Verweis in der `README.md` prüfen.
+
+## Sprint 20: Multi-Shell Completion
+Ziel: Unterstützung für Bash und Vorbereitung für weitere Shells.
+- [x] Refactoring `CompletionCommand` zur Unterstützung mehrerer Shells.
+- [x] Implementierung der Bash-Completion Logik.
+- [x] Aktualisierung der `README.md` für Bash-Support.
+- [x] Anpassung der Anforderungen.
+- [x] Entfernung des PowerShell-Defaults beim Completion-Befehl.

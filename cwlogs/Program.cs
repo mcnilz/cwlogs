@@ -20,7 +20,7 @@ app.Configure(config =>
         .WithDescription("Folgt den Logs einer Log-Gruppe live.");
 
     config.AddCommand<CompletionCommand>(CommandNames.Completion)
-        .WithDescription("Generiert das PowerShell-Completion-Script.");
+        .WithDescription("Generiert das Auto-Completion-Script für verschiedene Shells (powershell, bash).");
 
     config.AddCommand<CompleteCommand>(CommandNames.CompleteInternal)
         .IsHidden();

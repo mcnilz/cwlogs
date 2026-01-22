@@ -54,12 +54,12 @@ Ein einfaches Kommandozeilenwerkzeug (CLI), um AWS CloudWatch Logs zu durchsuche
 - Wenn die Eingabe mit `-` oder `--` beginnt, werden nur Optionen vervollständigt (Vermeidung von LogGroup/Stream Vorschlägen).
 - **Dynamische Metadaten:** Die Completion-Logik bezieht Befehle und Optionen dynamisch über einen internen Aufruf (`_complete --type metadata`), anstatt diese fest im Skript zu hinterlegen.
 
-## 7. Auto-Completion (Sprint 9)
-- Unterstützung für PowerShell 7.
+## 7. Auto-Completion (Sprint 9 & 20)
+- Unterstützung für PowerShell 7 und Bash.
 - Vervollständigung von Befehlen und Optionen.
 - Dynamische Vervollständigung von Log-Gruppen-Namen.
 - Dynamische Vervollständigung von Log-Stream-Namen bei Verwendung der `--stream` Option.
-- Generierung des Completion-Scripts über den Befehl `cwlogs completion`.
+- Generierung des Completion-Scripts über den Befehl `cwlogs completion <powershell|bash>`. Die Shell muss explizit angegeben werden.
 
 ## 9. Deployment (Sprint 13 & 14)
 - Das Tool soll als eigenständige Binärdatei (Single Binary) verteilt werden können.
