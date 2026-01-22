@@ -8,19 +8,19 @@ app.Configure(config =>
 {
     config.SetApplicationName("cwlogs");
     config.AddCommand<GroupsCommand>(CommandNames.Groups)
-        .WithDescription("Listet Log-Gruppen auf.");
+        .WithDescription("Lists log groups.");
 
     config.AddCommand<StreamsCommand>(CommandNames.Streams)
-        .WithDescription("Listet Log-Streams einer Log-Gruppe auf.");
+        .WithDescription("Lists log streams of a log group.");
 
     config.AddCommand<FetchCommand>(CommandNames.Fetch)
-        .WithDescription("Zeigt Logs einer Log-Gruppe an.");
+        .WithDescription("Displays logs of a log group.");
 
     config.AddCommand<TailCommand>(CommandNames.Tail)
-        .WithDescription("Folgt den Logs einer Log-Gruppe live.");
+        .WithDescription("Follows logs of a log group live.");
 
     config.AddCommand<CompletionCommand>(CommandNames.Completion)
-        .WithDescription("Generiert das Auto-Completion-Script für verschiedene Shells (powershell, bash).");
+        .WithDescription("Generates the auto-completion script for various shells (powershell, bash).");
 
     config.AddCommand<CompleteCommand>(CommandNames.CompleteInternal)
         .IsHidden();

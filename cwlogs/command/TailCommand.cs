@@ -20,7 +20,7 @@ public class TailCommand : LogBaseCommand<FetchSettings>
 
             if (string.IsNullOrEmpty(groupName))
             {
-                AnsiConsole.MarkupLine("[red]Fehler: Log-Gruppen-Name muss angegeben werden.[/]");
+                AnsiConsole.MarkupLine("[red]Error: Log group name must be specified.[/]");
                 return 1;
             }
 

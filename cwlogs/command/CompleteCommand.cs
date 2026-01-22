@@ -13,11 +13,11 @@ public class CompleteCommand : AsyncCommand<CompleteCommand.Settings>
     public class Settings : GlobalSettings
     {
         [CommandOption("--groups <GROUPS>")]
-        [Description("Name der Log-Gruppe für Stream-Vervollständigung")]
+        [Description("Name of the log group for stream completion")]
         public string? GroupName { get; init; }
         
         [CommandOption("--type <TYPE>")]
-        [Description("Typ der Vervollständigung (groups, streams, metadata)")]
+        [Description("Type of completion (groups, streams, metadata)")]
         public string? Type { get; init; }
     }
 

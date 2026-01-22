@@ -54,7 +54,7 @@ public abstract class LogBaseCommand<TSettings> : AsyncCommand<TSettings> where 
 
     private static string CleanLambdaMessage(string message)
     {
-        // Beispiel: 2026-01-22T08:24:52.392Z 0fbd43a3-1435-4cc0-8209-2de3b5f1a461 INFO
+        // Example: 2026-01-22T08:24:52.392Z 0fbd43a3-1435-4cc0-8209-2de3b5f1a461 INFO
         var parts = message.Split(['\t', ' '], StringSplitOptions.RemoveEmptyEntries);
         if (parts.Length >= 3)
         {

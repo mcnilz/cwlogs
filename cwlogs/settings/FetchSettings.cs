@@ -7,28 +7,28 @@ namespace cwlogs.settings;
 public class FetchSettings : StreamsSettings
 {
     [CommandOption("-s|--stream <STREAM>")]
-    [Description("Name des Log-Streams oder eine Zahl n für die n neuesten Streams.")]
+    [Description("Name of the log stream or a number n for the n latest streams.")]
     public string? Stream { get; [UsedImplicitly] init; }
 
     [CommandOption("-l|--limit <LIMIT>")]
     [DefaultValue(50)]
-    [Description("Maximale Anzahl der Log-Einträge.")]
+    [Description("Maximum number of log entries.")]
     public int Limit { get; init; } = 50;
 
     [CommandOption("--sort <SORT>")]
     [DefaultValue("desc")]
-    [Description("Sortierreihenfolge (asc, desc).")]
+    [Description("Sort order (asc, desc).")]
     public string Sort { get; init; } = "desc";
 
     [CommandOption("--single-line")]
-    [Description("Gibt Log-Einträge einzeilig aus.")]
+    [Description("Outputs log entries on a single line.")]
     public bool SingleLine { get; [UsedImplicitly] init; }
 
     [CommandOption("--raw")]
-    [Description("Gibt nur die Log-Nachricht ohne Metadaten aus.")]
+    [Description("Outputs only the log message without metadata.")]
     public bool Raw { get; [UsedImplicitly] init; }
 
     [CommandOption("--clean")]
-    [Description("Entfernt AWS Lambda Prefix (Timestamp, RequestID, Level) aus der Nachricht.")]
+    [Description("Removes AWS Lambda prefix (Timestamp, RequestID, Level) from the message.")]
     public bool Clean { get; [UsedImplicitly] init; }
 }

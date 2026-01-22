@@ -11,11 +11,11 @@ namespace cwlogs.settings;
 public class GlobalSettings : CommandSettings
 {
     [CommandOption("-p|--profile <PROFILE>")]
-    [Description("Das AWS-Profil, das verwendet werden soll.")]
+    [Description("The AWS profile to use.")]
     public string? Profile { get; [UsedImplicitly] init; }
 
     [CommandOption("-r|--region <REGION>")]
-    [Description("Die AWS-Region.")]
+    [Description("The AWS region.")]
     public string? Region { get; [UsedImplicitly] init; }
 
     public AmazonCloudWatchLogsClient CreateClient()
@@ -37,7 +37,7 @@ public class GlobalSettings : CommandSettings
             }
             else
             {
-                throw new Exception($"Profil '{Profile}' konnte nicht gefunden werden.");
+                throw new Exception($"Profile '{Profile}' could not be found.");
             }
         }
         else
