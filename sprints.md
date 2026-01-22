@@ -97,3 +97,14 @@ Ziel: Automatisierung der Ablage des fertigen Binaries.
 Ziel: Verbesserung der UX durch gezielte Vervollständigung von Optionen.
 - [x] Priorisierung von Optionen in der Completion-Logik, wenn das Präfix `-` oder `--` ist.
 - [x] Unterdrückung von dynamischen Ressourcen-Vorschlägen (Groups/Streams) bei Options-Eingabe.
+
+## Sprint 16: Dynamische Completion-Metadaten
+Ziel: Erhöhung der Wartbarkeit durch dynamisches Laden von Befehlen und Optionen.
+- [x] Implementierung von `_complete --type metadata` zur Ausgabe von Befehls- und Options-Informationen via Reflexion.
+- [x] Anpassung von `CompletionCommand` zur Nutzung der dynamischen Metadaten im PowerShell-Skript.
+- [x] Dynamische Erkennung von Optionen mit Werten für eine robustere Argument-Zählung.
+
+## Sprint 17: Zentralisierung von Konstanten
+Ziel: Verbesserung der Wartbarkeit durch Vermeidung von String-Duplikaten.
+- [x] Einführung der Klasse `CommandNames` für Command-Name Konstanten.
+- [x] Refactoring von `Program.cs`, `CompleteCommand.cs` und `CompletionCommand.cs` zur Nutzung der Konstanten.

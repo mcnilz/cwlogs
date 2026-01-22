@@ -1,4 +1,5 @@
-﻿using cwlogs.command;
+﻿using cwlogs.Base;
+using cwlogs.command;
 using Spectre.Console.Cli;
 
 var app = new CommandApp();
@@ -6,22 +7,22 @@ var app = new CommandApp();
 app.Configure(config =>
 {
     config.SetApplicationName("cwlogs");
-    config.AddCommand<GroupsCommand>("groups")
+    config.AddCommand<GroupsCommand>(CommandNames.Groups)
         .WithDescription("Listet Log-Gruppen auf.");
 
-    config.AddCommand<StreamsCommand>("streams")
+    config.AddCommand<StreamsCommand>(CommandNames.Streams)
         .WithDescription("Listet Log-Streams einer Log-Gruppe auf.");
 
-    config.AddCommand<FetchCommand>("fetch")
+    config.AddCommand<FetchCommand>(CommandNames.Fetch)
         .WithDescription("Zeigt Logs einer Log-Gruppe an.");
 
-    config.AddCommand<TailCommand>("tail")
+    config.AddCommand<TailCommand>(CommandNames.Tail)
         .WithDescription("Folgt den Logs einer Log-Gruppe live.");
 
-    config.AddCommand<CompletionCommand>("completion")
+    config.AddCommand<CompletionCommand>(CommandNames.Completion)
         .WithDescription("Generiert das PowerShell-Completion-Script.");
 
-    config.AddCommand<CompleteCommand>("_complete")
+    config.AddCommand<CompleteCommand>(CommandNames.CompleteInternal)
         .IsHidden();
 #if DEBUG
     config.PropagateExceptions();

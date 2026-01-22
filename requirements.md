@@ -52,6 +52,7 @@ Ein einfaches Kommandozeilenwerkzeug (CLI), um AWS CloudWatch Logs zu durchsuche
 - Die completion nutzt bevorzugt `--group` für die Identifizierung der Log-Gruppe.
 - Die Positionsargumente bleiben als Alias erhalten, werden aber in der Completion-Logik robuster behandelt.
 - Wenn die Eingabe mit `-` oder `--` beginnt, werden nur Optionen vervollständigt (Vermeidung von LogGroup/Stream Vorschlägen).
+- **Dynamische Metadaten:** Die Completion-Logik bezieht Befehle und Optionen dynamisch über einen internen Aufruf (`_complete --type metadata`), anstatt diese fest im Skript zu hinterlegen.
 
 ## 7. Auto-Completion (Sprint 9)
 - Unterstützung für PowerShell 7.
@@ -65,3 +66,6 @@ Ein einfaches Kommandozeilenwerkzeug (CLI), um AWS CloudWatch Logs zu durchsuche
 - Ziel: Keine Abhängigkeit von einer vorinstallierten .NET Runtime auf dem Zielsystem (Self-Contained).
 - Optimierung: Single-File Executable für einfache Handhabung.
 - **Release-Verzeichnis:** Bei einem Production-Build (Release) soll das fertige Binary automatisch in einem `dist`-Ordner im Projektverzeichnis abgelegt werden.
+
+## 10. Code-Qualität (Sprint 17)
+- Zentralisierung von Command-Namen in einer dedizierten `CommandNames` Klasse zur Vermeidung von String-Duplikaten.
