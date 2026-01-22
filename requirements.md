@@ -46,3 +46,7 @@ Ein einfaches Kommandozeilenwerkzeug (CLI), um AWS CloudWatch Logs zu durchsuche
     - `--single-line`: Log-Einträge werden einzeilig ausgegeben (entfernt Newlines innerhalb eines Eintrags).
     - `--raw`: Nur der Log-Text selbst wird ausgegeben, ohne Zeitstempel oder andere Präfixe des Tools.
     - `--clean`: Entfernt AWS-spezifische Präfixe (z. B. von Lambda: Timestamp, RequestID, Log-Level) aus der Nachricht.
+
+## 6. Wartbarkeit & Clean Code
+- Gemeinsame Logik für `fetch` und `tail` wird in einer Basisklasse (`LogBaseCommand`) gekapselt.
+- Klare Trennung von Zuständigkeiten (Settings, Commands, Base-Logic).

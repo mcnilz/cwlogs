@@ -45,3 +45,9 @@ Dieses Dokument unterteilt die Entwicklung in drei Sprints.
 **Ziel:** Verbessertes Handling von AWS-spezifischen Log-Präfixen.
 - [x] Implementierung der `--clean` Option zur Entfernung von Lambda-Präfixen.
 - [x] Konsistente Anwendung von `--clean` in `fetch` und `tail`.
+
+## Sprint 8: Refactoring und Clean Code
+**Ziel:** Reduzierung von Code-Duplikaten und Verbesserung der Wartbarkeit.
+- [x] Einführung einer Basisklasse `LogBaseCommand` für gemeinsame Funktionalität von `fetch` und `tail`.
+- [x] Extraktion von `ResolveStreams`, `PrintLogEvent` und `CleanLambdaMessage`.
+- [x] Refactoring von `FetchCommand` und `TailCommand` zur Nutzung der Basisklasse.
