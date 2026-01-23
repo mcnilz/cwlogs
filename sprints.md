@@ -171,3 +171,10 @@ Goal: Improving user experience by providing cleaner error messages.
 - [x] Introduction of a central `ErrorHandler` for consistent exception management.
 - [x] Suppression of full stack traces for `AmazonClientException` in release builds.
 - [x] Improved error visibility in `CompleteCommand`.
+
+## Sprint 28: AOT Warning Reduction
+Goal: Minimizing warnings during Native AOT compilation.
+- [x] Addition of `DynamicallyAccessedMembers` attributes to `ReflectionUtils`.
+- [x] Use of `DynamicDependency` in `Program.cs` to preserve types for Spectre.Console.Cli.
+- [x] Suppression of unavoidable AOT/Trimming warnings with clear justification.
+- [x] Verification of build and functionality after AOT optimizations.
