@@ -65,9 +65,9 @@ public class CompleteCommand : AsyncCommand<CompleteCommand.Settings>
 
             return 0;
         }
-        catch
+        catch (Exception ex)
         {
-            return 1;
+            return ErrorHandler.HandleException(ex);
         }
     }
 

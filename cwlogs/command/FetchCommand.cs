@@ -79,8 +79,7 @@ public class FetchCommand : LogBaseCommand<FetchSettings>
         }
         catch (Exception ex)
         {
-            AnsiConsole.WriteException(ex);
-            return 1;
+            return ErrorHandler.HandleException(ex);
         }
     }
 }

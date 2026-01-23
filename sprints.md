@@ -165,3 +165,9 @@ Goal: Enabling high-performance, native compilation for faster startup and small
 - [x] Manual registration of AWS SSO OIDC dependencies for AOT compatibility.
 - [x] Replacement of reflection-based exception formatting with AOT-compatible alternatives.
 - [x] Documentation of AOT build requirements (C++ build tools).
+
+## Sprint 27: Error Handling and UX
+Goal: Improving user experience by providing cleaner error messages.
+- [x] Introduction of a central `ErrorHandler` for consistent exception management.
+- [x] Suppression of full stack traces for `AmazonClientException` in release builds.
+- [x] Improved error visibility in `CompleteCommand`.

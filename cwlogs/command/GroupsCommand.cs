@@ -1,4 +1,5 @@
 using cwlogs.settings;
+using cwlogs.util;
 using JetBrains.Annotations;
 using Spectre.Console;
 using Spectre.Console.Cli;
@@ -34,8 +35,7 @@ public class GroupsCommand : AsyncCommand<GlobalSettings>
         }
         catch (Exception ex)
         {
-            AnsiConsole.WriteException(ex);
-            return 1;
+            return ErrorHandler.HandleException(ex);
         }
     }
 }
