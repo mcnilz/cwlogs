@@ -12,30 +12,35 @@ public static class ReflectionUtils
 
         if (settingsType != null)
         {
-            var currentSettingsType = (Type?)settingsType;
-            while (currentSettingsType != null && currentSettingsType != typeof(object))
+            foreach (var prop in settingsType.GetProperties(BindingFlags.Instance | BindingFlags.Public))
             {
-                foreach (var prop in currentSettingsType.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly))
+                foreach (var attr in prop.GetCustomAttributes(true))
                 {
-                    foreach (var attr in prop.GetCustomAttributes(true))
+                    var attrType = attr.GetType();
+                    if (attrType.Name == "CommandOptionAttribute")
                     {
-                        var attrType = attr.GetType();
-                        if (attrType.Name == "CommandOptionAttribute")
+                        var template = GetPropertyValue(attr, "Template") as string;
+                        if (!string.IsNullOrEmpty(template))
                         {
-                            var shorts = GetPropertyValue(attr, "ShortNames") as System.Collections.IEnumerable;
-                            var longs = GetPropertyValue(attr, "LongNames") as System.Collections.IEnumerable;
-                            if (shorts != null)
+                            var parts = template.Split([' ', '<', '['], StringSplitOptions.RemoveEmptyEntries)[0].Split('|');
+                            foreach (var part in parts)
                             {
-                                foreach (var s in shorts) if (s != null) optionList.Add("-" + s);
+                                if (part.StartsWith('-')) optionList.Add(part);
                             }
-                            if (longs != null)
-                            {
-                                foreach (var l in longs) if (l != null) optionList.Add("--" + l);
-                            }
+                        }
+                        
+                        var shorts = GetPropertyValue(attr, "ShortNames") as System.Collections.IEnumerable;
+                        var longs = GetPropertyValue(attr, "LongNames") as System.Collections.IEnumerable;
+                        if (shorts != null)
+                        {
+                            foreach (var s in shorts) if (s != null) optionList.Add("-" + s);
+                        }
+                        if (longs != null)
+                        {
+                            foreach (var l in longs) if (l != null) optionList.Add("--" + l);
                         }
                     }
                 }
-                currentSettingsType = currentSettingsType.BaseType;
             }
         }
 

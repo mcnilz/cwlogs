@@ -69,10 +69,10 @@ _{exeName}_completions()
         for (( i=2; i < COMP_CWORD; i++ )); do
             if [[ ! ""${{COMP_WORDS[i]}}"" == -* ]]; then
                 # Check if previous word was an option that expects a value
-                # In our case almost all options have values except --raw, --clean, --single-line
+                # In our case almost all options have values except --raw, --clean, --single-line, --no-color
                 if [[ $i -gt 2 ]]; then
                     local p=${{COMP_WORDS[i-1]}}
-                    if [[ ""$p"" == ""--raw"" || ""$p"" == ""--clean"" || ""$p"" == ""--single-line"" ]]; then
+                    if [[ ""$p"" == ""--raw"" || ""$p"" == ""--clean"" || ""$p"" == ""--single-line"" || ""$p"" == ""--no-color"" ]]; then
                          ((pos_args++))
                     fi
                 else

@@ -56,7 +56,7 @@ If you are using Native AOT, the resulting binary is a true native executable wi
 - `-g|--group <GROUP>`: Explicitly specify the Log Group name.
 - `-s|--stream <STREAM>`: Filter by Log Stream name or use a number `n` to select the `n` most recent streams.
 - `-l|--limit <LIMIT>`: Maximum number of log entries to retrieve (Default: 50).
-- `--sort <asc|desc>`: Sort order (only for `fetch`, default is `desc`).
+- `--sort <asc|desc>`: Sort order (only for `fetch`, default is `asc`).
 - `--since <SINCE>`: Only show logs after a specific time (e.g., '1h', '30m', '1d', or a date like '2025-01-22').
 - `--single-line`: Collapses multi-line log entries into a single line.
 - `--raw`: Outputs only the log message without timestamps or colors.

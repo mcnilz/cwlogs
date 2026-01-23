@@ -27,12 +27,19 @@ public class ReflectionUtilsTests
         // FetchCommand uses FetchSettings (inherits from StreamsSettings and GlobalSettings)
         options.Should().Contain("-p");
         options.Should().Contain("--profile");
+        options.Should().Contain("-r");
+        options.Should().Contain("--region");
+        options.Should().Contain("--no-color");
         options.Should().Contain("-g");
         options.Should().Contain("--group");
         options.Should().Contain("-s");
         options.Should().Contain("--stream");
         options.Should().Contain("-l");
         options.Should().Contain("--limit");
+        options.Should().Contain("--sort");
+        options.Should().Contain("--single-line");
+        options.Should().Contain("--raw");
+        options.Should().Contain("--clean");
         options.Should().Contain("--json");
         options.Should().Contain("--since");
     }

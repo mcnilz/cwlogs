@@ -20,10 +20,18 @@ public class FetchCommandTests
                 Events = [new FilteredLogEvent { Message = "log1", Timestamp = 123456789 }]
             });
 
+        var settings = new FetchSettings
+        {
+            GroupName = "my-group",
+            Limit = 10
+        };
+        // Verify default sort is asc
+        settings.Sort.Should().Be("asc");
+
         var mockSettings = new Mock<FetchSettings>();
-        mockSettings.SetupGet(s => s.GroupName).Returns("my-group");
-        mockSettings.SetupGet(s => s.Sort).Returns("asc");
-        mockSettings.SetupGet(s => s.Limit).Returns(10);
+        mockSettings.SetupGet(s => s.GroupName).Returns(settings.GroupName);
+        mockSettings.SetupGet(s => s.Sort).Returns(settings.Sort);
+        mockSettings.SetupGet(s => s.Limit).Returns(settings.Limit);
         mockSettings.Setup(s => s.CreateClient()).Returns(mockClient.Object);
 
         var command = new FetchCommand();

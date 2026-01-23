@@ -44,7 +44,7 @@ A simple command-line tool (CLI) to search, list, and live-tail AWS CloudWatch L
 - **Table Design:** Spectre.Console tables should have no border by default.
 - **Stream Selection:** In `fetch` and `tail`, a stream can be selected by name or index (number). A number `n` selects the `n` latest streams.
 - **Limit:** Parameter `--limit` to limit the number of retrieved log entries.
-- **Sorting:** Parameter `--sort` to control the sort order (`asc` or `desc`).
+- **Sorting:** Parameter `--sort` to control the sort order (`asc` or `desc`). Default is `asc`.
 - **Time Filtering:** Parameter `--since` to retrieve logs from a certain point in time (e.g., '1h', '30m', '1d').
 - **Formatting:**
     - `--single-line`: Log entries are output on a single line (removes newlines within an entry).

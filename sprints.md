@@ -178,3 +178,17 @@ Goal: Minimizing warnings during Native AOT compilation.
 - [x] Use of `DynamicDependency` in `Program.cs` to preserve types for Spectre.Console.Cli.
 - [x] Suppression of unavoidable AOT/Trimming warnings with clear justification.
 - [x] Verification of build and functionality after AOT optimizations.
+
+## Sprint 29: UX Refinement and Autocomplete Fixes
+Goal: Improving default behavior and fixing auto-completion.
+- [x] Changed default sort order to `asc` so latest logs appear at the end.
+- [x] Fixed auto-completion to include inherited options (e.g., `--limit`, `--sort`, `--no-color`).
+- [x] Improved AOT compatibility for option extraction in `ReflectionUtils`.
+- [x] Added unit tests for default sort order and extended option detection.
+
+## Sprint 30: Native AOT Completion Fixes
+Goal: Ensuring full auto-completion support in Native AOT binaries.
+- [x] Fixed issue where `CommandOptionAttribute` properties were trimmed in AOT.
+- [x] Added `DynamicDependency` for `CommandOptionAttribute` in `Program.cs`.
+- [x] Updated shell completion generators to correctly handle `--no-color` as a boolean flag.
+- [x] Verified metadata output in a real Native AOT build.

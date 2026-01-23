@@ -24,6 +24,7 @@ internal static class Program
     [DynamicDependency(DynamicallyAccessedMemberTypes.All, "Spectre.Console.Cli.XmlDocCommand", "Spectre.Console.Cli")]
     [DynamicDependency(DynamicallyAccessedMemberTypes.All, "Spectre.Console.Cli.EmptyCommandSettings", "Spectre.Console.Cli")]
     [DynamicDependency(DynamicallyAccessedMemberTypes.All, "Spectre.Console.Cli.OpenCliGeneratorCommand", "Spectre.Console.Cli")]
+    [DynamicDependency(DynamicallyAccessedMemberTypes.PublicProperties, "Spectre.Console.Cli.CommandOptionAttribute", "Spectre.Console.Cli")]
     [UnconditionalSuppressMessage("Trimming", "IL2111", Justification = "CompleteCommand is explicitly preserved via DynamicDependency.")]
     [UnconditionalSuppressMessage("AOT", "IL3050", Justification = "Spectre.Console.Cli relies on reflection, but we use DynamicDependency to preserve necessary types.")]
     public static async Task<int> Main(string[] args)

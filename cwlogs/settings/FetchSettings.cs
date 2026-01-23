@@ -16,9 +16,9 @@ public class FetchSettings : StreamsSettings
     public virtual int Limit { get; init; } = 50;
 
     [CommandOption("--sort <SORT>")]
-    [DefaultValue("desc")]
+    [DefaultValue("asc")]
     [Description("Sort order (asc, desc).")]
-    public virtual string Sort { get; init; } = "desc";
+    public virtual string Sort { get; init; } = "asc";
 
     [CommandOption("--single-line")]
     [Description("Outputs log entries on a single line.")]

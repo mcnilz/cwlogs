@@ -27,8 +27,8 @@ $cwlogsCompleter = {{
             $commandMap[$cmdName] = $cmdOptions
             $commands += $cmdName
             # Heuristik: Optionen mit Werten (alle außer Boolean-Schalter)
-            # In diesem Tool haben fast alle Optionen Werte außer --single-line, --raw, --clean
-            $cmdOptions | Where-Object {{ $_ -notmatch '^(--single-line|--raw|--clean)$' }} | ForEach-Object {{ $allOptionsWithValues += $_ }}
+            # In diesem Tool haben fast alle Optionen Werte außer --single-line, --raw, --clean, --no-color
+            $cmdOptions | Where-Object {{ $_ -notmatch '^(--single-line|--raw|--clean|--no-color)$' }} | ForEach-Object {{ $allOptionsWithValues += $_ }}
         }}
     }}
     if ($commands.Count -eq 0) {{
