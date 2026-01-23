@@ -6,152 +6,113 @@ public static class PowerShellCompletionGenerator
 {
     public static string Generate(string exePath, string exeName)
     {
-        return $@"
-$cwlogsCompleter = {{
+        exePath = exePath.Trim().Replace("\r", "").Replace("\n", "");
+        exeName = exeName.Trim().Replace("\r", "").Replace("\n", "");
+        var internalCmd = CommandNames.CompleteInternal.Trim();
+        
+        var template = @"
+$cwlogsCompleter = {
     param($wordToComplete, $commandAst, $cursorPosition)
-
+    $exe = '[[EXE_PATH]]'
+    $internal = '[[INTERNAL]]'
     $commandElements = $commandAst.CommandElements
-    # Das erste Element ist das ausfuehrbare Programm (cwlogs)
-    
-    $globalOptions = @('--profile', '-p', '--region', '-r', '--help', '-h')
-    
-    # Dynamische Metadaten laden
-    $metadata = & '{exePath}' {CommandNames.CompleteInternal} --type metadata
-    $commandMap = @{{}}
+    $metadata = & ""$exe"" $internal --type metadata
+    $commandMap = @{}
     $commands = @()
-    $allOptionsWithValues = @()
-    foreach ($line in $metadata) {{
-        if ($line -match '^COMMAND:(.+):(.*)$') {{
+    $optionsWithValues = @()
+    $globalOptions = @()
+    foreach ($line in $metadata) {
+        if ($line -match '^COMMAND:([^:]+):(.*)$') {
             $cmdName = $Matches[1]
-            $cmdOptions = $Matches[2] -split ',' | Where-Object {{ $_ }}
-            $commandMap[$cmdName] = $cmdOptions
-            $commands += $cmdName
-            # Heuristik: Optionen mit Werten (alle außer Boolean-Schalter)
-            # In diesem Tool haben fast alle Optionen Werte außer --single-line, --raw, --clean, --no-color
-            $cmdOptions | Where-Object {{ $_ -notmatch '^(--single-line|--raw|--clean|--no-color)$' }} | ForEach-Object {{ $allOptionsWithValues += $_ }}
-        }}
-    }}
-    if ($commands.Count -eq 0) {{
-        $commands = @('{CommandNames.Groups}', '{CommandNames.Streams}', '{CommandNames.Fetch}', '{CommandNames.Tail}', '{CommandNames.Completion}')
-    }}
-    $allOptionsWithValues = $allOptionsWithValues | Select-Object -Unique
-    $optionsWithValuesRegex = '^(' + (($allOptionsWithValues | ForEach-Object {{ [regex]::Escape($_) }}) -join '|') + ')$'
+            $optionsRaw = $Matches[2] -split ',' | Where-Object { $_ }
+            $cmdOptions = @()
+            foreach ($optRaw in $optionsRaw) {
+                $parts = $optRaw -split ':'
+                $optName = $parts[0]
+                $optType = $parts[1]
+                if ($cmdName -eq 'GLOBAL') { $globalOptions += $optName }
+                else { $cmdOptions += $optName }
+                if ($optType -eq 'VALUE') { $optionsWithValues += $optName }
+            }
+            if ($cmdName -ne 'GLOBAL') {
+                $commandMap[$cmdName] = $cmdOptions
+                $commands += $cmdName
+            }
+        }
+    }
+    if ($commands.Count -eq 0) { $commands = @('groups', 'streams', 'fetch', 'tail', 'completion') }
+    if ($commandElements.Count -le 1 -or ($commandElements.Count -eq 2 -and $wordToComplete)) {
+        return $commands | Where-Object { $_ -like ""$wordToComplete*"" } | ForEach-Object { [System.Management.Automation.CompletionResult]::new($_, $_, 'Command', $_) }
+    }
+    $currentCommand = $commandElements[1].Value
+    if ($currentCommand) { $currentCommand = $currentCommand.Trim('""', ""'"") }
+    if ($wordToComplete -like '-*') {
+        $allOptions = $globalOptions
+        if ($commandMap.ContainsKey($currentCommand)) { $allOptions += $commandMap[$currentCommand] }
+        $allOptions = $allOptions | Select-Object -Unique
+        return $allOptions | Where-Object { $_ -like ""$wordToComplete*"" } | ForEach-Object { [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterName', $_) }
+    }
 
-    # Fall 1: Vervollstaendigung des Unterbefehls (z.B. cwlogs <TAB>)
-    if ($commandElements.Count -le 1) {{
-        return $commands | Where-Object {{ $_ -like ""$wordToComplete*"" }} | ForEach-Object {{ [System.Management.Automation.CompletionResult]::new($_, $_, 'Command', $_) }}
-    }}
+    # Case 2: Completion of LogGroups
+    if ($currentCommand -match '^(streams|fetch|tail)$') {
+        # Check if we are potentially completing a LogGroup
+        $isOptionValue = $false
+        $prev = $null
+        if ($wordToComplete) { $prev = $commandElements[$commandElements.Count - 2].Value }
+        else { $prev = $commandElements[$commandElements.Count - 1].Value }
+        
+        if ($optionsWithValues -contains $prev) { $isOptionValue = $true }
 
-    $currentCommand = $commandElements[1].Value.Trim('""', ""'"")
-    if ($commandElements.Count -eq 2 -and $wordToComplete -and !($commandMap.ContainsKey($currentCommand))) {{
-        return $commands | Where-Object {{ $_ -like ""$wordToComplete*"" }} | ForEach-Object {{ [System.Management.Automation.CompletionResult]::new($_, $_, 'Command', $_) }}
-    }}
-    
-    # Wenn wir gerade erst den Befehl getippt haben und TAB druecken
-    if ($commandElements.Count -eq 2 -and !$wordToComplete) {{
-         if ($currentCommand -match '^({CommandNames.Streams}|{CommandNames.Fetch}|{CommandNames.Tail})$') {{
-             $groups = & '{exePath}' {CommandNames.CompleteInternal} --type {CommandNames.Groups}
-             if ($groups) {{
-                return $groups | ForEach-Object {{ [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_) }}
-             }}
-         }}
-    }}
-    
-    # Hilfsfunktion zum Finden des Index eines Parameters
-    function Get-ParameterValue {{
-        param($name)
-        for ($i = 1; $i -lt $commandElements.Count; $i++) {{
-            if ($commandElements[$i].Value -eq $name -and ($i + 1) -lt $commandElements.Count) {{
-                return $commandElements[$i+1].Value
-            }}
-        }}
-        return $null
-    }}
+        if (-not $isOptionValue) {
+            $groups = & ""$exe"" $internal --type groups
+            if ($groups) {
+                return $groups | Where-Object { $_ -like ""$wordToComplete*"" } | ForEach-Object { [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_) }
+            }
+        }
+    }
 
-    # Fall 5: Vervollstaendigung von Optionen
-    $allOptions = $globalOptions
-    if ($commandMap.ContainsKey($currentCommand)) {{
-        $allOptions += $commandMap[$currentCommand]
-    }}
-    $allOptions = $allOptions | Select-Object -Unique
-    
-    if ($wordToComplete -like '-*') {{
-        $results = $allOptions | Where-Object {{ $_ -like ""$wordToComplete*"" }} | ForEach-Object {{ [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterName', $_) }}
-        if ($results) {{ return $results }}
-    }}
-
-    # Fall 2: Vervollstaendigung von LogGroups (erstes Argument nach streams/fetch/tail)
-    if ($currentCommand -match '^({CommandNames.Streams}|{CommandNames.Fetch}|{CommandNames.Tail})$') {{
-        # Zaehle wie viele Positionsargumente (keine Optionen) vor dem aktuellen Wort kommen
-        $positionalArgsCount = 0
-        for ($i = 2; $i -lt ($commandElements.Count - ($wordToComplete ? 1 : 0)); $i++) {{
-            $val = $commandElements[$i].Value
-            if ($val -like '-*') {{
-                if ($val -match $optionsWithValuesRegex) {{
-                    $i++
-                }}
-                continue
-            }}
-            $positionalArgsCount++
-        }}
-
-        if ($positionalArgsCount -eq 0) {{
-             $groups = & '{exePath}' {CommandNames.CompleteInternal} --type {CommandNames.Groups}
-             if ($groups) {{
-                return $groups | Where-Object {{ $_ -like ""$wordToComplete*"" }} | ForEach-Object {{ [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_) }}
-             }}
-        }}
-    }}
-
-    # Fall 3: Vervollstaendigung von LogStreams (nach --stream oder -s)
+    # Case 3: Completion of LogStreams (after --stream or -s)
     $prevWord = $null
-    if ($wordToComplete) {{
-        $prevWord = $commandElements[$commandElements.Count - 2].Value
-    }} else {{
-        $prevWord = $commandElements[$commandElements.Count - 1].Value
-    }}
+    if ($wordToComplete) { $prevWord = $commandElements[$commandElements.Count - 2].Value }
+    else { $prevWord = $commandElements[$commandElements.Count - 1].Value }
 
-    if ($prevWord -eq '--stream' -or $prevWord -eq '-s') {{
+    if ($prevWord -eq '--stream' -or $prevWord -eq '-s') {
+        # Search for LogGroup (first positional argument or --group)
         $group = $null
-        # Suche erst nach --group / -g
-        $group = Get-ParameterValue '--group'
-        if (!$group) {{ $group = Get-ParameterValue '-g' }}
-
-        if (!$group) {{
-            # Suche das erste Positionsargument (die LogGroup)
-            for ($i = 2; $i -lt ($commandElements.Count - ($wordToComplete ? 1 : 0)); $i++) {{
-                $val = $commandElements[$i].Value
-                # Pruefe ob es eine Option ist
-                if ($val -like '-*') {{
-                    # Wenn es eine Option mit Wert ist, ueberspringe auch den Wert (grob geschaetzt)
-                    if ($val -match $optionsWithValuesRegex) {{
-                        $i++
-                    }}
-                    continue
-                }}
-                $group = $val
+        for ($i = 2; $i -lt $commandElements.Count; $i++) {
+            $val = $commandElements[$i].Value
+            if ($val -eq '--group' -or $val -eq '-g') {
+                if ($i + 1 -lt $commandElements.Count) { $group = $commandElements[$i+1].Value }
                 break
-            }}
-        }}
+            }
+        }
+        if (!$group) {
+            for ($i = 2; $i -lt $commandElements.Count; $i++) {
+                $val = $commandElements[$i].Value
+                if ($val -notlike '-*') { $group = $val; break }
+            }
+        }
+        if ($group) {
+            $streams = & ""$exe"" $internal --type streams --groups $group
+            if ($streams) {
+                return $streams | Where-Object { $_ -like ""$wordToComplete*"" } | ForEach-Object { [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_) }
+            }
+        }
+    }
 
-        if ($group) {{
-            $streams = & '{exePath}' {CommandNames.CompleteInternal} --type {CommandNames.Streams} --groups $group
-            if ($streams) {{
-                return $streams | Where-Object {{ $_ -like ""$wordToComplete*"" }} | ForEach-Object {{ [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_) }}
-            }}
-        }}
-    }}
-
-    # Fall 4: Vervollstaendigung von Shells fuer completion
-    if ($currentCommand -eq '{CommandNames.Completion}') {{
-        return @('powershell', 'bash') | Where-Object {{ $_ -like ""$wordToComplete*"" }} | ForEach-Object {{ [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_) }}
-    }}
+    # Case 4: Completion of Shells for completion
+    if ($currentCommand -eq 'completion') {
+        return @('powershell', 'bash') | Where-Object { $_ -like ""$wordToComplete*"" } | ForEach-Object { [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_) }
+    }
 
     return $null
-}}
-
-Register-ArgumentCompleter -CommandName '{exeName}' -ScriptBlock $cwlogsCompleter
-Register-ArgumentCompleter -CommandName '{exeName}.exe' -ScriptBlock $cwlogsCompleter
-".Trim();
+}
+Register-ArgumentCompleter -CommandName '[[EXE_NAME]]' -ScriptBlock $cwlogsCompleter; Register-ArgumentCompleter -CommandName '[[EXE_NAME]].exe' -ScriptBlock $cwlogsCompleter;
+";
+        return template
+            .Replace("[[EXE_PATH]]", exePath)
+            .Replace("[[EXE_NAME]]", exeName)
+            .Replace("[[INTERNAL]]", internalCmd)
+            .Trim();
     }
 }

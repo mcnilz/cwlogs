@@ -192,3 +192,16 @@ Goal: Ensuring full auto-completion support in Native AOT binaries.
 - [x] Added `DynamicDependency` for `CommandOptionAttribute` in `Program.cs`.
 - [x] Updated shell completion generators to correctly handle `--no-color` as a boolean flag.
 - [x] Verified metadata output in a real Native AOT build.
+
+## Sprint 31: Testability of Autocomplete
+Goal: Enabling autocomplete testing without live AWS access.
+- [x] Implementation of a dummy mode in `CompleteCommand.cs` via environment variable `CWLOGS_DUMMY_COMPLETION`.
+- [x] Updating `PowerShellCompletionGenerator.cs` to correctly handle log group completion and avoid suggestions after value-consuming options.
+- [x] Updating `tests\PowerShellCompletionTests.ps1` to include tests for log group and log stream completion using dummy data.
+- [x] Verification of the complete PowerShell completion logic using simulated tests.
+
+## Sprint 32: English-only transition
+Goal: Remove remaining German text from codebase and tests.
+- [x] Translated comments in `PowerShellCompletionGenerator.cs` to English.
+- [x] Translated `Write-Host` messages and test output in `PowerShellCompletionTests.ps1` to English.
+- [x] Verified that no other German text remains in the core codebase.

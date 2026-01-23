@@ -29,12 +29,32 @@ public class CompleteCommand : AsyncCommand<CompleteCommand.Settings>
         {
             if (settings.Type == "metadata")
             {
+                PrintMetadata("GLOBAL", typeof(GroupsCommand), true); // GroupsCommand uses GlobalSettings
                 PrintMetadata(CommandNames.Groups, typeof(GroupsCommand));
                 PrintMetadata(CommandNames.Streams, typeof(StreamsCommand));
                 PrintMetadata(CommandNames.Fetch, typeof(FetchCommand));
                 PrintMetadata(CommandNames.Tail, typeof(TailCommand));
                 PrintMetadata(CommandNames.Completion, typeof(CompletionCommand));
                 
+                return 0;
+            }
+
+            var dummyMode = Environment.GetEnvironmentVariable("CWLOGS_DUMMY_COMPLETION");
+            if (!string.IsNullOrEmpty(dummyMode))
+            {
+                if (settings.Type == CommandNames.Groups)
+                {
+                    Console.WriteLine("dummy-group-1");
+                    Console.WriteLine("dummy-group-2");
+                    Console.WriteLine("test-group-bash");
+                    Console.WriteLine("test-group-pwsh");
+                }
+                else if (settings.Type == CommandNames.Streams && !string.IsNullOrEmpty(settings.GroupName))
+                {
+                    Console.WriteLine($"stream-1-for-{settings.GroupName}");
+                    Console.WriteLine($"stream-2-for-{settings.GroupName}");
+                    Console.WriteLine($"latest-stream");
+                }
                 return 0;
             }
 
@@ -71,11 +91,19 @@ public class CompleteCommand : AsyncCommand<CompleteCommand.Settings>
         }
     }
 
-    private void PrintMetadata(string name, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] System.Type type)
+    private void PrintMetadata(string name, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] System.Type type, bool globalOnly = false)
     {
-        var options = ReflectionUtils.GetCommandOptions(type);
-        options.Add("-h");
-        options.Add("--help");
-        Console.WriteLine($"COMMAND:{name}:{string.Join(",", options.Distinct())}");
+        var options = ReflectionUtils.GetCommandOptionsDetailed(type);
+        if (!globalOnly)
+        {
+            options.Add(("-h", true));
+            options.Add(("--help", true));
+        }
+        
+        var optionsStrings = options
+            .Distinct()
+            .Select(o => $"{o.Name}{(o.IsFlag ? ":FLAG" : ":VALUE")}");
+            
+        Console.WriteLine($"COMMAND:{name}:{string.Join(",", optionsStrings)}");
     }
 }

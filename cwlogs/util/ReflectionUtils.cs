@@ -5,19 +5,20 @@ namespace cwlogs.util;
 
 public static class ReflectionUtils
 {
-    public static List<string> GetCommandOptions([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] Type commandType)
+    public static List<(string Name, bool IsFlag)> GetCommandOptionsDetailed([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] Type commandType)
     {
-        var optionList = new List<string>();
+        var optionList = new List<(string Name, bool IsFlag)>();
         var settingsType = GetSettingsType(commandType);
 
         if (settingsType != null)
         {
             foreach (var prop in settingsType.GetProperties(BindingFlags.Instance | BindingFlags.Public))
             {
+                var isFlag = prop.PropertyType == typeof(bool);
                 foreach (var attr in prop.GetCustomAttributes(true))
                 {
                     var attrType = attr.GetType();
-                    if (attrType.Name == "CommandOptionAttribute")
+                    if (attrType.FullName == "Spectre.Console.Cli.CommandOptionAttribute" || attr.GetType().Name == "CommandOptionAttribute")
                     {
                         var template = GetPropertyValue(attr, "Template") as string;
                         if (!string.IsNullOrEmpty(template))
@@ -25,7 +26,7 @@ public static class ReflectionUtils
                             var parts = template.Split([' ', '<', '['], StringSplitOptions.RemoveEmptyEntries)[0].Split('|');
                             foreach (var part in parts)
                             {
-                                if (part.StartsWith('-')) optionList.Add(part);
+                                if (part.StartsWith('-')) optionList.Add((part, isFlag));
                             }
                         }
                         
@@ -33,18 +34,18 @@ public static class ReflectionUtils
                         var longs = GetPropertyValue(attr, "LongNames") as System.Collections.IEnumerable;
                         if (shorts != null)
                         {
-                            foreach (var s in shorts) if (s != null) optionList.Add("-" + s);
+                            foreach (var s in shorts) if (s != null) optionList.Add(("-" + s, isFlag));
                         }
                         if (longs != null)
                         {
-                            foreach (var l in longs) if (l != null) optionList.Add("--" + l);
+                            foreach (var l in longs) if (l != null) optionList.Add(("--" + l, isFlag));
                         }
                     }
                 }
             }
         }
 
-        return optionList.Distinct().ToList();
+        return optionList.GroupBy(x => x.Name).Select(g => g.First()).ToList();
     }
 
     [UnconditionalSuppressMessage("ReflectionAnalysis", "IL2075:UnsatisfiedGetPropertyClassifier",
@@ -57,7 +58,7 @@ public static class ReflectionUtils
     [UnconditionalSuppressMessage("ReflectionAnalysis", "IL2073:UnsatisfiedReturnClassifier",
         Justification = "We know that command settings types have public properties for options.")]
     [return: DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)]
-    private static Type? GetSettingsType([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] Type commandType)
+    private static Type? GetSettingsType([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] Type commandType)
     {
         var currentType = (Type?)commandType;
         while (currentType != null && currentType != typeof(object))

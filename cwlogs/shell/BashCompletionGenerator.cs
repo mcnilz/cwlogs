@@ -16,11 +16,34 @@ _{exeName}_completions()
 
     # Load dynamic metadata
     local metadata=$( '{exePath}' {CommandNames.CompleteInternal} --type metadata )
+    
     local commands=()
+    local global_opts=()
+    local value_opts=()
     
     while IFS= read -r line; do
         if [[ $line =~ ^COMMAND:([^:]+):(.*)$ ]]; then
-            commands+=(""${{BASH_REMATCH[1]}}"")
+            local cmd_name=""${{BASH_REMATCH[1]}}""
+            local opts_raw=""${{BASH_REMATCH[2]}}""
+            
+            if [[ ""$cmd_name"" == ""GLOBAL"" ]]; then
+                IFS=',' read -ra opts_arr <<< ""$opts_raw""
+                for opt_info in ""${{opts_arr[@]}}""; do
+                    local opt_name=""${{opt_info%%:*}}""
+                    global_opts+=(""$opt_name"")
+                    if [[ ""$opt_info"" == *"":VALUE"" ]]; then
+                        value_opts+=(""$opt_name"")
+                    fi
+                done
+            else
+                commands+=(""$cmd_name"")
+                IFS=',' read -ra opts_arr <<< ""$opts_raw""
+                for opt_info in ""${{opts_arr[@]}}""; do
+                    if [[ ""$opt_info"" == *"":VALUE"" ]]; then
+                        value_opts+=(""${{opt_info%%:*}}"")
+                    fi
+                done
+            fi
         fi
     done <<< ""$metadata""
 
@@ -42,15 +65,19 @@ _{exeName}_completions()
 
     # 2. Completion of options
     if [[ ""$cur"" == -* ]]; then
-        local cmd_opts=""""
+        local cmd_opts=()
         while IFS= read -r line; do
             if [[ $line =~ ^COMMAND:$subcmd:(.*)$ ]]; then
-                cmd_opts=${{BASH_REMATCH[1]//,/ }}
+                local opts_raw=""${{BASH_REMATCH[1]}}""
+                IFS=',' read -ra opts_arr <<< ""$opts_raw""
+                for opt_info in ""${{opts_arr[@]}}""; do
+                    cmd_opts+=(""${{opt_info%%:*}}"")
+                done
                 break
             fi
         done <<< ""$metadata""
         
-        local all_opts=""-p --profile -r --region -h --help $cmd_opts""
+        local all_opts=""${{global_opts[*]}} ${{cmd_opts[*]}}""
         COMPREPLY=( $(compgen -W ""$all_opts"" -- ""$cur"") )
         return 0
     fi
@@ -64,20 +91,26 @@ _{exeName}_completions()
              return 0
         fi
 
-        # Simple check for first positional argument (very rough for Bash)
+        # Simple check for first positional argument
         local pos_args=0
+        local skip_next=0
         for (( i=2; i < COMP_CWORD; i++ )); do
-            if [[ ! ""${{COMP_WORDS[i]}}"" == -* ]]; then
-                # Check if previous word was an option that expects a value
-                # In our case almost all options have values except --raw, --clean, --single-line, --no-color
-                if [[ $i -gt 2 ]]; then
-                    local p=${{COMP_WORDS[i-1]}}
-                    if [[ ""$p"" == ""--raw"" || ""$p"" == ""--clean"" || ""$p"" == ""--single-line"" || ""$p"" == ""--no-color"" ]]; then
-                         ((pos_args++))
+            if [[ $skip_next -eq 1 ]]; then
+                skip_next=0
+                continue
+            fi
+            
+            local word=""${{COMP_WORDS[i]}}""
+            if [[ ""$word"" == -* ]]; then
+                # Check if this option expects a value
+                for val_opt in ""${{value_opts[@]}}""; do
+                    if [[ ""$word"" == ""$val_opt"" ]]; then
+                        skip_next=1
+                        break
                     fi
-                else
-                     ((pos_args++))
-                fi
+                done
+            else
+                ((pos_args++))
             fi
         done
 
@@ -92,20 +125,50 @@ _{exeName}_completions()
     if [[ ""$prev"" == ""--stream"" || ""$prev"" == ""-s"" ]]; then
         # Search for group
         local group=""""
+        local skip_next=0
         for (( i=2; i < COMP_CWORD; i++ )); do
-             if [[ ""${{COMP_WORDS[i]}}"" == ""--group"" || ""${{COMP_WORDS[i]}}"" == ""-g"" ]]; then
-                 group=""${{COMP_WORDS[i+1]}}""
-                 break
-             fi
+            if [[ $skip_next -eq 1 ]]; then
+                skip_next=0
+                continue
+            fi
+            
+            local word=""${{COMP_WORDS[i]}}""
+            if [[ ""$word"" == ""--group"" || ""$word"" == ""-g"" ]]; then
+                group=""${{COMP_WORDS[i+1]}}""
+                break
+            fi
+            
+            if [[ ""$word"" == -* ]]; then
+                for val_opt in ""${{value_opts[@]}}""; do
+                    if [[ ""$word"" == ""$val_opt"" ]]; then
+                        skip_next=1
+                        break
+                    fi
+                done
+            fi
         done
         
         if [[ -z ""$group"" ]]; then
             # Take the first positional argument
+            skip_next=0
             for (( i=2; i < COMP_CWORD; i++ )); do
-                if [[ ! ""${{COMP_WORDS[i]}}"" == -* ]]; then
-                    group=""${{COMP_WORDS[i]}}""
+                if [[ $skip_next -eq 1 ]]; then
+                    skip_next=0
+                    continue
+                fi
+                
+                local word=""${{COMP_WORDS[i]}}""
+                if [[ ! ""$word"" == -* ]]; then
+                    group=""$word""
                     break
                 fi
+                
+                for val_opt in ""${{value_opts[@]}}""; do
+                    if [[ ""$word"" == ""$val_opt"" ]]; then
+                        skip_next=1
+                        break
+                    fi
+                done
             done
         fi
 
@@ -114,6 +177,12 @@ _{exeName}_completions()
             COMPREPLY=( $(compgen -W ""$streams"" -- ""$cur"") )
             return 0
         fi
+    fi
+
+    # 5. Completion for completion command shells
+    if [[ ""$subcmd"" == ""{CommandNames.Completion}"" ]]; then
+        COMPREPLY=( $(compgen -W ""powershell bash"" -- ""$cur"") )
+        return 0
     fi
 
     return 0
