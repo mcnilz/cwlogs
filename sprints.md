@@ -243,3 +243,9 @@ Goal: Provide Native AOT binaries for macOS and Linux ARM64.
 - [x] Generalized binary renaming logic to support multiple architectures and platforms.
 - [x] Updated GitHub Release step to include all new artifacts.
 - [x] Updated documentation (`README.md`, `requirements.md`) to reflect expanded platform support.
+
+## Sprint 40: CI/CD Robustness
+Goal: Improve CI/CD stability and resolve throttling issues.
+- [x] Added `concurrency` control to `ci-cd.yml` to prevent parallel release updates.
+- [x] Restricted the number of parallel jobs using `max-parallel` to prevent rate limiting.
+- [x] Enabled `fail_on_unmatched_files` in the release step for better error detection.
