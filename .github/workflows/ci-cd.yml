@@ -67,7 +67,6 @@ jobs:
     strategy:
       max-parallel: 1
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
         include:
           - os: ubuntu-latest
             artifact_name: cwlogs-linux-x64
@@ -105,17 +104,14 @@ jobs:
     - name: Publish Native AOT
       run: dotnet publish cwlogs/cwlogs.csproj -c Release -r ${{ matrix.rid }} /p:PublishAot=true /p:PublishDir=../dist/ ${{ matrix.rid == 'linux-arm64' && '/p:StripSymbols=false' || '' }}
 
-    - name: Rename binary (Linux)
-      if: matrix.os == 'ubuntu-latest'
-      run: mv dist/cwlogs dist/${{ matrix.artifact_name }}
-
-    - name: Rename binary (macOS)
-      if: matrix.os == 'macos-latest'
-      run: mv dist/cwlogs dist/${{ matrix.artifact_name }}
-
-    - name: Rename binary (Windows)
-      if: matrix.os == 'windows-latest'
-      run: mv dist/cwlogs.exe dist/cwlogs-win-x64.exe
+    - name: Rename binary
+      shell: bash
+      run: |
+        if [ "${{ matrix.os }}" = "windows-latest" ]; then
+          mv dist/cwlogs.exe dist/${{ matrix.artifact_name }}
+        else
+          mv dist/cwlogs dist/${{ matrix.artifact_name }}
+        fi
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
