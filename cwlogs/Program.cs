@@ -27,6 +27,7 @@ internal static class Program
     [DynamicDependency(DynamicallyAccessedMemberTypes.PublicProperties, "Spectre.Console.Cli.CommandOptionAttribute", "Spectre.Console.Cli")]
     [UnconditionalSuppressMessage("Trimming", "IL2111", Justification = "CompleteCommand is explicitly preserved via DynamicDependency.")]
     [UnconditionalSuppressMessage("AOT", "IL3050", Justification = "Spectre.Console.Cli relies on reflection, but we use DynamicDependency to preserve necessary types.")]
+    [UnconditionalSuppressMessage("SingleFile", "IL3000", Justification = "Spectre.Console.Cli internally calls Assembly.Location, which returns empty in single-file apps, but we provide the application name explicitly.")]
     public static async Task<int> Main(string[] args)
     {
         var app = new CommandApp();

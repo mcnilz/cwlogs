@@ -18,7 +18,7 @@ public class CompletionCommand : AsyncCommand<CompletionSettings>
             return Task.FromResult(1);
         }
 
-        var exePath = System.Diagnostics.Process.GetCurrentProcess().MainModule?.FileName ?? "cwlogs";
+        var exePath = Environment.ProcessPath ?? "cwlogs";
         var exeName = System.IO.Path.GetFileNameWithoutExtension(exePath);
 
         if (settings.Shell.Equals("bash", StringComparison.OrdinalIgnoreCase))

@@ -265,3 +265,9 @@ Goal: Optimize CI/CD by optionally skipping tests for pre-releases.
 - [x] Fixed `Publish Native AOT` step by using shell-agnostic GitHub Actions expressions instead of platform-dependent shell scripts.
 - [x] Corrected CI/CD matrix logic to ensure all five target platforms (including `linux-x64`) are built and released correctly by using explicit `include` entries.
 - [x] Consolidated and simplified binary renaming logic in the workflow.
+
+## Sprint 44: AOT & Single-File Improvements
+Goal: Address warnings related to `Assembly.Location` in Native AOT and Single-File builds.
+- [x] Replaced `Process.MainModule.FileName` with `Environment.ProcessPath` in `CompletionCommand.cs` for better AOT compatibility.
+- [x] Suppressed `IL3000` warning in `Program.cs` caused by internal `Assembly.Location` calls in `Spectre.Console.Cli`.
+- [x] Ensured consistent use of AOT-safe APIs for path resolution.
