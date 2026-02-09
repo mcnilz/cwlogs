@@ -235,3 +235,11 @@ Goal: Transparently disclose that the project is AI-generated.
 ## Sprint 38: Fix CI/CD Release Permissions
 Goal: Resolve 403 error during GitHub Release.
 - [x] Added explicit `contents: write` permissions to the `github-release` job in `ci-cd.yml`.
+
+## Sprint 39: Multi-Platform Support (macOS & Linux ARM64)
+Goal: Provide Native AOT binaries for macOS and Linux ARM64.
+- [x] Added `macos-latest` and `linux-arm64` to the test and release matrix in `ci-cd.yml`.
+- [x] Configured build for `osx-x64`, `osx-arm64`, and `linux-arm64` RIDs.
+- [x] Generalized binary renaming logic to support multiple architectures and platforms.
+- [x] Updated GitHub Release step to include all new artifacts.
+- [x] Updated documentation (`README.md`, `requirements.md`) to reflect expanded platform support.

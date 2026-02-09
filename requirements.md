@@ -72,7 +72,7 @@ A simple command-line tool (CLI) to search, list, and live-tail AWS CloudWatch L
 - Optimization: Single-file executable for easy handling.
 - **Native AOT:** The tool is compiled as a Native AOT binary for maximum performance and minimal startup time.
 - **Release Directory:** For a production build (Release), the finished binary should automatically be placed in a `dist` folder in the project directory.
-- **CI/CD Pipeline:** GitHub Actions automatically run tests and create releases with Native AOT binaries for Windows and Linux.
+- **CI/CD Pipeline:** GitHub Actions automatically run tests and create releases with Native AOT binaries for Windows (x64), Linux (x64, ARM64), and macOS (x64, ARM64).
     - Pushes to `main` update the `latest` pre-release.
     - Creating a version tag (e.g., `v1.0.0`) creates a stable release.
 
