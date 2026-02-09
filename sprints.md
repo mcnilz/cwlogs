@@ -231,3 +231,7 @@ Goal: Update project documentation with the final repository URL.
 ## Sprint 37: AI Generation Notice
 Goal: Transparently disclose that the project is AI-generated.
 - [x] Added a note in the upper section of `README.md` regarding AI generation.
+
+## Sprint 38: Fix CI/CD Release Permissions
+Goal: Resolve 403 error during GitHub Release.
+- [x] Added explicit `contents: write` permissions to the `github-release` job in `ci-cd.yml`.
