@@ -1,5 +1,8 @@
 ﻿name: CI/CD
 
+env:
+  SKIP_TESTS_ON_PRE_RELEASE: true
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -14,6 +17,7 @@ on:
 
 jobs:
   test:
+    if: github.event_name != 'push' || github.ref != 'refs/heads/main' || env.SKIP_TESTS_ON_PRE_RELEASE != 'true'
     runs-on: ${{ matrix.os }}
     strategy:
       max-parallel: 1
@@ -39,7 +43,11 @@ jobs:
 
   release:
     needs: test
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
+    if: |
+      always() &&
+      (needs.test.result == 'success' || needs.test.result == 'skipped') &&
+      github.event_name == 'push' &&
+      (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
     runs-on: ${{ matrix.os }}
     strategy:
       max-parallel: 1
@@ -80,7 +88,12 @@ jobs:
         fi
 
     - name: Publish Native AOT
-      run: dotnet publish cwlogs/cwlogs.csproj -c Release -r ${{ matrix.rid }} /p:PublishAot=true /p:PublishDir=../dist/
+      run: |
+        EXTRA_ARGS=""
+        if [ "${{ matrix.rid }}" = "linux-arm64" ]; then
+          EXTRA_ARGS="/p:StripSymbols=false"
+        fi
+        dotnet publish cwlogs/cwlogs.csproj -c Release -r ${{ matrix.rid }} /p:PublishAot=true /p:PublishDir=../dist/ $EXTRA_ARGS
 
     - name: Rename binary (Linux)
       if: matrix.os == 'ubuntu-latest'

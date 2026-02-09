@@ -75,6 +75,7 @@ A simple command-line tool (CLI) to search, list, and live-tail AWS CloudWatch L
 - **CI/CD Pipeline:** GitHub Actions automatically run tests and create releases with Native AOT binaries for Windows (x64), Linux (x64, ARM64), and macOS (x64, ARM64).
     - Pushes to `main` update the `latest` pre-release.
     - Creating a version tag (e.g., `v1.0.0`) creates a stable release.
+    - Tests can be optionally skipped for pre-releases via the `SKIP_TESTS_ON_PRE_RELEASE` environment variable in the workflow.
 
 ## 10. Code Quality (Sprint 17 & 25)
 - Centralization of command names in a dedicated `CommandNames` class to avoid string duplication.

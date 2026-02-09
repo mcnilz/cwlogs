@@ -255,5 +255,13 @@ Goal: Ensure builds in CI use the correct platform-specific Runtime Identifier.
 - [x] Removed hardcoded `win-x64` RuntimeIdentifier from `cwlogs.csproj` to allow environment-based builds in CI.
 
 ## Sprint 42: Fix Linux ARM64 Native AOT Build
-Goal: Resolve linker errors during cross-compilation for Linux ARM64.
+Goal: Resolve linker and objcopy errors during cross-compilation for Linux ARM64.
 - [x] Added `gcc-aarch64-linux-gnu` and `binutils-aarch64-linux-gnu` dependencies for the `linux-arm64` build in GitHub Actions.
+- [x] Disabled `StripSymbols` for `linux-arm64` to avoid `objcopy` format recognition errors on the x64 host.
+
+## Sprint 43: Conditional Test Execution in CI/CD
+Goal: Optimize CI/CD by optionally skipping tests for pre-releases.
+- [x] Introduced `SKIP_TESTS_ON_PRE_RELEASE` environment variable in `ci-cd.yml`.
+- [x] Configured `test` job to skip execution when it's a pre-release and the skip variable is enabled.
+- [x] Adjusted `release` job dependencies to ensure it runs even if tests are skipped.
+- [x] Enabled test skipping for pre-releases by default.
