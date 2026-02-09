@@ -261,4 +261,5 @@ Goal: Resolve linker and objcopy errors during cross-compilation for Linux ARM64
 
 ## Sprint 43: Conditional Test Execution in CI/CD
 Goal: Optimize CI/CD by optionally skipping tests for pre-releases.
-- [x] Configured `test` job steps to conditionally execute based on the `SKIP_TESTS_ON_PRE_RELEASE` environment variable, enabling a functional toggle while avoiding `env` context limitations in job-level conditions.
+- [x] Implemented a `prepare` job to evaluate the `SKIP_TESTS_ON_PRE_RELEASE` variable and provide it as an output, enabling job-level skipping of the `test` job while maintaining the configuration within the workflow file.
+- [x] Fixed `Publish Native AOT` step by using shell-agnostic GitHub Actions expressions instead of platform-dependent shell scripts, ensuring compatibility across Windows, Linux, and macOS without requiring explicit shell configuration.
