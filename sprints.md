@@ -247,9 +247,13 @@ Goal: Provide Native AOT binaries for macOS and Linux ARM64.
 ## Sprint 40: CI/CD Robustness
 Goal: Improve CI/CD stability and resolve throttling issues.
 - [x] Added `concurrency` control to `ci-cd.yml` to prevent parallel release updates.
-- [x] Restricted the number of parallel jobs using `max-parallel` to prevent rate limiting.
+- [x] Restricted the number of parallel jobs (set to 1) to prevent rate limiting and save resources.
 - [x] Enabled `fail_on_unmatched_files` in the release step for better error detection.
 
 ## Sprint 41: Platform-Independent Build
 Goal: Ensure builds in CI use the correct platform-specific Runtime Identifier.
 - [x] Removed hardcoded `win-x64` RuntimeIdentifier from `cwlogs.csproj` to allow environment-based builds in CI.
+
+## Sprint 42: Fix Linux ARM64 Native AOT Build
+Goal: Resolve linker errors during cross-compilation for Linux ARM64.
+- [x] Added `gcc-aarch64-linux-gnu` and `binutils-aarch64-linux-gnu` dependencies for the `linux-arm64` build in GitHub Actions.
