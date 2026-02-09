@@ -205,3 +205,29 @@ Goal: Remove remaining German text from codebase and tests.
 - [x] Translated comments in `PowerShellCompletionGenerator.cs` to English.
 - [x] Translated `Write-Host` messages and test output in `PowerShellCompletionTests.ps1` to English.
 - [x] Verified that no other German text remains in the core codebase.
+
+## Sprint 33: Open Source & GitHub Actions
+Goal: Prepare the project for GitHub and automate releases.
+- [x] Added GitHub Actions workflow for CI (Tests) and CD (Native AOT Releases for Win/Linux).
+- [x] Updated `README.md` with CI badges and download links.
+- [x] Updated `requirements.md` to reflect CI/CD and Native AOT status.
+- [x] Verified project is ready for MIT licensed open source publication.
+## Sprint 34: Rolling Pre-releases
+Goal: Enable "latest" pre-releases from the main branch.
+- [x] Modified GitHub Actions workflow to trigger releases on `main` branch pushes.
+- [x] Configured `softprops/action-gh-release` to update a `latest` pre-release tag.
+- [x] Updated `README.md` and `requirements.md` to document pre-release availability.
+
+## Sprint 35: Branch Renaming
+Goal: Rename `master` branch to `main`.
+- [x] Updated GitHub Actions workflow to use `main` as the only primary branch.
+- [x] Removed all references to `master` in the codebase and documentation.
+- [x] Renamed local branch from `master` to `main`.
+
+## Sprint 36: Repository Finalization
+Goal: Update project documentation with the final repository URL.
+- [x] Replaced `your-username` placeholders with `mcnilz` in `README.md`.
+
+## Sprint 37: AI Generation Notice
+Goal: Transparently disclose that the project is AI-generated.
+- [x] Added a note in the upper section of `README.md` regarding AI generation.

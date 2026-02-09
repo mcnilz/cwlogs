@@ -66,11 +66,15 @@ A simple command-line tool (CLI) to search, list, and live-tail AWS CloudWatch L
 - Dynamic completion of log stream names when using the `--stream` option.
 - Generation of the completion script via the command `cwlogs completion <powershell|bash>`. The shell must be explicitly specified.
 
-## 9. Deployment (Sprint 13 & 14)
+## 9. Deployment (Sprint 13, 14 & 33)
 - The tool should be distributable as a standalone binary (Single Binary).
 - Goal: No dependency on a pre-installed .NET Runtime on the target system (Self-Contained).
 - Optimization: Single-file executable for easy handling.
+- **Native AOT:** The tool is compiled as a Native AOT binary for maximum performance and minimal startup time.
 - **Release Directory:** For a production build (Release), the finished binary should automatically be placed in a `dist` folder in the project directory.
+- **CI/CD Pipeline:** GitHub Actions automatically run tests and create releases with Native AOT binaries for Windows and Linux.
+    - Pushes to `main` update the `latest` pre-release.
+    - Creating a version tag (e.g., `v1.0.0`) creates a stable release.
 
 ## 10. Code Quality (Sprint 17 & 25)
 - Centralization of command names in a dedicated `CommandNames` class to avoid string duplication.

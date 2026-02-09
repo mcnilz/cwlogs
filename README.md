@@ -1,5 +1,11 @@
 ﻿# cwlogs - AWS CloudWatch Logs CLI
 
+> [!NOTE]
+> This project is almost entirely AI-generated.
+
+[![CI/CD](https://github.com/mcnilz/cwlogs/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/mcnilz/cwlogs/actions/workflows/ci-cd.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 `cwlogs` is a lightweight, user-friendly Command Line Interface (CLI) tool for browsing, searching, and tailing AWS CloudWatch Logs. It is built with .NET 10 and designed for speed and ease of use, featuring full PowerShell 7 auto-completion.
 
 ## Features
@@ -14,13 +20,22 @@
 
 ## Installation
 
+### Download Binaries
+
+You can download pre-compiled Native AOT binaries for Windows and Linux from the [Releases](https://github.com/mcnilz/cwlogs/releases) page.
+
+- **Stable Releases:** Tagged versions (e.g., `v1.0.0`).
+- **Latest Pre-release:** Always matches the current `main` branch (available under the `latest` tag).
+
+These binaries are standalone and do not require the .NET runtime.
+
 ### Build from Source
 
 To build `cwlogs` yourself, you need the [.NET 10 SDK](https://dotnet.microsoft.com/download).
 
 1. Clone the repository:
    ```powershell
-   git clone https://github.com/your-username/cwlogs.git
+   git clone https://github.com/mcnilz/cwlogs.git
    cd cwlogs
    ```
 

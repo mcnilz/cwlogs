@@ -1,0 +1,99 @@
+﻿name: CI/CD
+
+on:
+  push:
+    branches: [ main ]
+    tags:
+      - 'v*'
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 10.0.x
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --no-restore
+
+    - name: Test
+      run: dotnet test --no-build --verbosity normal
+
+  release:
+    needs: test
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        include:
+          - os: ubuntu-latest
+            artifact_name: cwlogs-linux-x64
+            rid: linux-x64
+          - os: windows-latest
+            artifact_name: cwlogs-win-x64.exe
+            rid: win-x64
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 10.0.x
+
+    - name: Install dependencies (Linux)
+      if: matrix.os == 'ubuntu-latest'
+      run: sudo apt-get update && sudo apt-get install -y clang zlib1g-dev
+
+    - name: Publish Native AOT
+      run: dotnet publish cwlogs/cwlogs.csproj -c Release -r ${{ matrix.rid }} /p:PublishAot=true /p:PublishDir=../dist/
+
+    - name: Rename binary (Linux)
+      if: matrix.os == 'ubuntu-latest'
+      run: mv dist/cwlogs dist/cwlogs-linux-x64
+
+    - name: Rename binary (Windows)
+      if: matrix.os == 'windows-latest'
+      run: mv dist/cwlogs.exe dist/cwlogs-win-x64.exe
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ matrix.artifact_name }}
+        path: dist/${{ matrix.artifact_name }}
+
+  github-release:
+    needs: release
+    runs-on: ubuntu-latest
+    steps:
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: artifacts
+
+    - name: Create Release
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'latest' }}
+        name: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'Pre-release (Main)' }}
+        prerelease: ${{ !startsWith(github.ref, 'refs/tags/v') }}
+        make_latest: ${{ startsWith(github.ref, 'refs/tags/v') && 'true' || 'false' }}
+        files: |
+          artifacts/cwlogs-linux-x64/cwlogs-linux-x64
+          artifacts/cwlogs-win-x64.exe/cwlogs-win-x64.exe
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
