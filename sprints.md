@@ -282,3 +282,17 @@ Goal: Upgrade to xUnit v3, optimize build settings, and update dependencies.
 - [x] Updated all AWSSDK packages to their latest stable versions.
 - [x] Updated `Microsoft.NET.Test.Sdk` to 18.0.1 and `xunit.runner.visualstudio` to 3.1.5.
 - [x] Verified that all 28 tests pass and output is correctly captured by xUnit.
+
+## Sprint 47: AOT Build Warning Cleanup
+Goal: Eliminate build warnings during Native AOT publishing.
+- [x] Suppressed `IL2104` and `IL3053` warnings for `Spectre.Console.Cli` via `SuppressTrimAnalysisWarnings` and `SuppressAotAnalysisWarnings`.
+- [x] Suppressed `IL3000` warning for `Spectre.Console.Cli` via `NoWarn`.
+- [x] Added `TrimmerRootAssembly` for `Spectre.Console.Cli` to ensure assembly preservation.
+- [x] Verified a clean AOT build without warnings.
+
+## Sprint 48: Automated Cleanup and CI/CD Fixes
+Goal: Improve build hygiene and fix automated completion tests.
+- [x] Added `CleanDist` target to `cwlogs.csproj` to automatically remove the `dist` folder during `dotnet clean`.
+- [x] Fixed a syntax error in the generated PowerShell completion script (trailing semicolons in `Register-ArgumentCompleter`).
+- [x] Adjusted `powershell-completion-test.yml` to use `dotnet publish` and correctly locate the binary in the `dist` directory.
+- [x] Verified that PowerShell completion tests pass in the CI environment.

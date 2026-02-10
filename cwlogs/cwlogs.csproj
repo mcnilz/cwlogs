@@ -11,9 +11,24 @@
         <PublishTrimmed Condition="'$(PublishAot)' != 'true'">false</PublishTrimmed>
     </PropertyGroup>
 
+    <ItemGroup>
+        <!-- Suppress warnings from Spectre.Console.Cli as they are known but handled via DynamicDependency in Program.cs -->
+        <TrimmerRootAssembly Include="Spectre.Console.Cli" />
+    </ItemGroup>
+
+    <PropertyGroup>
+        <SuppressTrimAnalysisWarnings>true</SuppressTrimAnalysisWarnings>
+        <SuppressAotAnalysisWarnings>true</SuppressAotAnalysisWarnings>
+        <NoWarn>$(NoWarn);IL3000</NoWarn>
+    </PropertyGroup>
+
     <PropertyGroup Condition="'$(Configuration)' == 'Release'">
         <PublishDir>..\dist\</PublishDir>
     </PropertyGroup>
+
+    <Target Name="CleanDist" AfterTargets="Clean">
+        <RemoveDir Directories="..\dist" />
+    </Target>
 
     <ItemGroup>
       <PackageReference Include="AWSSDK.CloudWatchLogs" Version="4.0.14.5" />

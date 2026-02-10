@@ -9,7 +9,7 @@ public static class PowerShellCompletionGenerator
         exePath = exePath.Trim().Replace("\r", "").Replace("\n", "");
         exeName = exeName.Trim().Replace("\r", "").Replace("\n", "");
         var internalCmd = CommandNames.CompleteInternal.Trim();
-        
+
         var template = @"
 $cwlogsCompleter = {
     param($wordToComplete, $commandAst, $cursorPosition)
@@ -60,7 +60,7 @@ $cwlogsCompleter = {
         $prev = $null
         if ($wordToComplete) { $prev = $commandElements[$commandElements.Count - 2].Value }
         else { $prev = $commandElements[$commandElements.Count - 1].Value }
-        
+
         if ($optionsWithValues -contains $prev) { $isOptionValue = $true }
 
         if (-not $isOptionValue) {
@@ -107,7 +107,8 @@ $cwlogsCompleter = {
 
     return $null
 }
-Register-ArgumentCompleter -CommandName '[[EXE_NAME]]' -ScriptBlock $cwlogsCompleter; Register-ArgumentCompleter -CommandName '[[EXE_NAME]].exe' -ScriptBlock $cwlogsCompleter;
+Register-ArgumentCompleter -CommandName '[[EXE_NAME]]' -ScriptBlock $cwlogsCompleter
+Register-ArgumentCompleter -CommandName '[[EXE_NAME]].exe' -ScriptBlock $cwlogsCompleter
 ";
         return template
             .Replace("[[EXE_PATH]]", exePath)
