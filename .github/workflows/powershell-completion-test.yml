@@ -1,0 +1,24 @@
+﻿name: PowerShell Completion Tests
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-powershell-completion:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 10.0.x
+
+    - name: Build
+      run: dotnet build cwlogs/cwlogs.csproj -c Release
+
+    - name: Run PowerShell Completion Tests
+      shell: pwsh
+      run: |
+        ./tests/PowerShellCompletionTests.ps1 -exePath "cwlogs/bin/Release/net10.0/cwlogs.exe"
