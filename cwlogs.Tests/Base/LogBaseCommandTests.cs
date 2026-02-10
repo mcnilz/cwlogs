@@ -1,7 +1,6 @@
 using Amazon.CloudWatchLogs;
 using Amazon.CloudWatchLogs.Model;
 using cwlogs.Base;
-using FluentAssertions;
 using Moq;
 
 namespace cwlogs.Tests.Base;
@@ -13,7 +12,7 @@ public class LogBaseCommandTests
     {
         var mockClient = new Mock<IAmazonCloudWatchLogs>();
         var result = await LogBaseCommand<cwlogs.settings.FetchSettings>.ResolveStreams(mockClient.Object, "group", null, CancellationToken.None);
-        result.Should().BeNull();
+        Assert.Null(result);
     }
 
     [Fact]
@@ -21,8 +20,8 @@ public class LogBaseCommandTests
     {
         var mockClient = new Mock<IAmazonCloudWatchLogs>();
         var result = await LogBaseCommand<cwlogs.settings.FetchSettings>.ResolveStreams(mockClient.Object, "group", "my-stream", CancellationToken.None);
-        result.Should().HaveCount(1);
-        result![0].Should().Be("my-stream");
+        Assert.Single(result!);
+        Assert.Equal("my-stream", result![0]);
     }
 
     [Fact]
@@ -37,11 +36,11 @@ public class LogBaseCommandTests
 
         var result = await LogBaseCommand<cwlogs.settings.FetchSettings>.ResolveStreams(mockClient.Object, "group", "2", CancellationToken.None);
 
-        result.Should().HaveCount(2);
-        result![0].Should().Be("stream1");
-        result[1].Should().Be("stream2");
+        Assert.Equal(2, result!.Count);
+        Assert.Equal("stream1", result![0]);
+        Assert.Equal("stream2", result![1]);
 
-        mockClient.Verify(c => c.DescribeLogStreamsAsync(It.Is<DescribeLogStreamsRequest>(r => 
+        mockClient.Verify(c => c.DescribeLogStreamsAsync(It.Is<DescribeLogStreamsRequest>(r =>
             r.LogGroupName == "group" && r.Limit == 2 && r.OrderBy == OrderBy.LastEventTime && r.Descending == true), It.IsAny<CancellationToken>()), Times.Once);
     }
 }

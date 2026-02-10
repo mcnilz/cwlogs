@@ -2,7 +2,6 @@ using Amazon.CloudWatchLogs;
 using Amazon.CloudWatchLogs.Model;
 using cwlogs.Base;
 using cwlogs.command;
-using FluentAssertions;
 using Moq;
 using Spectre.Console.Cli;
 
@@ -19,7 +18,7 @@ public class CompleteCommandTests
 
         var result = await command.ExecuteAsync(context, settings, CancellationToken.None);
 
-        result.Should().Be(0);
+        Assert.Equal(0, result);
         // Metadata doesn't use AWS client, so no need to mock it
     }
 
@@ -42,7 +41,7 @@ public class CompleteCommandTests
 
         var result = await command.ExecuteAsync(context, settingsMock.Object, CancellationToken.None);
 
-        result.Should().Be(0);
+        Assert.Equal(0, result);
         mockClient.Verify(c => c.DescribeLogGroupsAsync(It.IsAny<DescribeLogGroupsRequest>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -66,7 +65,7 @@ public class CompleteCommandTests
 
         var result = await command.ExecuteAsync(context, settingsMock.Object, CancellationToken.None);
 
-        result.Should().Be(0);
+        Assert.Equal(0, result);
         mockClient.Verify(c => c.DescribeLogStreamsAsync(It.Is<DescribeLogStreamsRequest>(r => r.LogGroupName == "my-group"), It.IsAny<CancellationToken>()), Times.Once);
     }
 }

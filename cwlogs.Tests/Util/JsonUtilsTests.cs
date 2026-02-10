@@ -1,6 +1,5 @@
 using System.Text.Json;
 using cwlogs.util;
-using FluentAssertions;
 
 namespace cwlogs.Tests.Util;
 
@@ -11,7 +10,7 @@ public class JsonUtilsTests
     {
         var message = "Hello World";
         var result = JsonUtils.ParseMessage(message);
-        result.Should().Be(message);
+        Assert.Equal(message, result);
     }
 
     [Fact]
@@ -19,9 +18,9 @@ public class JsonUtilsTests
     {
         var message = "{\"key\": \"value\"}";
         var result = JsonUtils.ParseMessage(message);
-        result.Should().BeOfType<JsonElement>();
+        Assert.IsType<JsonElement>(result);
         var element = (JsonElement)result;
-        element.GetProperty("key").GetString().Should().Be("value");
+        Assert.Equal("value", element.GetProperty("key").GetString());
     }
 
     [Fact]
@@ -29,9 +28,9 @@ public class JsonUtilsTests
     {
         var message = "[1, 2, 3]";
         var result = JsonUtils.ParseMessage(message);
-        result.Should().BeOfType<JsonElement>();
+        Assert.IsType<JsonElement>(result);
         var element = (JsonElement)result;
-        element.GetArrayLength().Should().Be(3);
+        Assert.Equal(3, element.GetArrayLength());
     }
 
     [Fact]
@@ -39,6 +38,6 @@ public class JsonUtilsTests
     {
         var message = "{invalid}";
         var result = JsonUtils.ParseMessage(message);
-        result.Should().Be(message);
+        Assert.Equal(message, result);
     }
 }

@@ -6,7 +6,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <PublishSingleFile>true</PublishSingleFile>
-        <SelfContained>true</SelfContained>
+        <SelfContained Condition="'$(PublishAot)' != 'true'">false</SelfContained>
         <PublishReadyToRun>true</PublishReadyToRun>
         <PublishTrimmed Condition="'$(PublishAot)' != 'true'">false</PublishTrimmed>
     </PropertyGroup>
@@ -16,10 +16,10 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="AWSSDK.CloudWatchLogs" Version="4.0.14.4" />
-      <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.3.21" />
-      <PackageReference Include="AWSSDK.SSO" Version="4.0.2.12" />
-      <PackageReference Include="AWSSDK.SSOOIDC" Version="4.0.3.13" />
+      <PackageReference Include="AWSSDK.CloudWatchLogs" Version="4.0.14.5" />
+      <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.3.22" />
+      <PackageReference Include="AWSSDK.SSO" Version="4.0.2.13" />
+      <PackageReference Include="AWSSDK.SSOOIDC" Version="4.0.3.14" />
       <PackageReference Include="JetBrains.Annotations" Version="2025.2.4" />
       <PackageReference Include="Spectre.Console.Cli" Version="0.53.1" />
     </ItemGroup>

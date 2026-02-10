@@ -2,7 +2,6 @@ using Amazon.CloudWatchLogs;
 using Amazon.CloudWatchLogs.Model;
 using cwlogs.command;
 using cwlogs.settings;
-using FluentAssertions;
 using Moq;
 using Spectre.Console.Cli;
 
@@ -13,7 +12,7 @@ public class GroupsCommandTests
     [Fact]
     public async Task ExecuteAsync_CallsDescribeLogGroups()
     {
-        var mockClient = new Mock<IAmazonCloudWatchLogs>(); 
+        var mockClient = new Mock<IAmazonCloudWatchLogs>();
         mockClient.Setup(c => c.DescribeLogGroupsAsync(It.IsAny<DescribeLogGroupsRequest>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new DescribeLogGroupsResponse
             {
@@ -28,7 +27,7 @@ public class GroupsCommandTests
 
         var result = await command.ExecuteAsync(context, settings.Object, CancellationToken.None);
 
-        result.Should().Be(0);
+        Assert.Equal(0, result);
         mockClient.Verify(c => c.DescribeLogGroupsAsync(It.IsAny<DescribeLogGroupsRequest>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 }

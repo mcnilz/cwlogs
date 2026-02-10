@@ -271,3 +271,14 @@ Goal: Allow manual execution of PowerShell completion tests via GitHub Actions.
 - [x] Created `.github/workflows/powershell-completion-test.yml` with `workflow_dispatch`.
 - [x] Configured the workflow to build the project in Release mode and run `PowerShellCompletionTests.ps1` on `windows-latest`.
 - [x] Documented the manual test option in `sprints.md`.
+
+## Sprint 46: Modernization and Dependency Updates
+Goal: Upgrade to xUnit v3, optimize build settings, and update dependencies.
+- [x] Upgraded `cwlogs.Tests` to xUnit v3 (3.2.2).
+- [x] Reverted explicit `IAnsiConsole` injection (Commit `6e41838`) to use xUnit v3's automatic capturing of `Console.Out`.
+- [x] Adjusted `cwlogs.csproj` to fix reference issues with self-contained executables (NETSDK1151).
+- [x] Changed `SelfContained` to be conditional in `cwlogs.csproj` (`false` if not `PublishAot`).
+- [x] Removed `FluentAssertions` and refactored all tests to use standard xUnit `Assert` statements.
+- [x] Updated all AWSSDK packages to their latest stable versions.
+- [x] Updated `Microsoft.NET.Test.Sdk` to 18.0.1 and `xunit.runner.visualstudio` to 3.1.5.
+- [x] Verified that all 28 tests pass and output is correctly captured by xUnit.
